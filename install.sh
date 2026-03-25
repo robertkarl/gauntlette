@@ -3,14 +3,14 @@ set -e
 
 SKILL_DIR="$HOME/.claude/skills"
 GAUNTLETTE_DIR="$SKILL_DIR/gauntlette"
-SOURCE_DIR="$(cd "$(dirname "$0")/skills-from-claude-ai" && pwd)"
+SOURCE_DIR="$(cd "$(dirname "$0")/skills" && pwd)"
 
 # Skills to install
 SKILLS=(survey product-review ux-review arch-review fresh-eyes implement code-review quality-check)
 
 # Check source exists
 if [ ! -d "$SOURCE_DIR" ]; then
-  echo "ERROR: skills-from-claude-ai/ not found. Run from the gauntlette repo root."
+  echo "ERROR: skills/ not found. Run from the gauntlette repo root."
   exit 1
 fi
 

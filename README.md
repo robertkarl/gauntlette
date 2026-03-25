@@ -1,29 +1,51 @@
 # Gauntlette
 
-Opinionated feature pipeline for Claude Code. No telemetry, no ads, no update checks, no bloat.
-
-Inspired by gstack's structure. Stripped to essentials.
+Review pipeline for Claude Code. Every feature gets one plan document, refined through multiple personas until it's ready to ship.
 
 ## The Gauntlette
 
 ```
-/survey → /product-review → /ux-review → /arch-review → /fresh-eyes → /implement → /code-review → /quality-check
+/survey → /product-review → /ux-review → /arch-review
+    → /fresh-eyes → /implement → /code-review → /quality-check
 ```
 
-Each stage writes findings to `.claude/reviews/` so nothing gets lost. Your feature has to survive every gate.
+Each skill reads the plan, does its job, and edits the plan with its findings. One document in, one document out — coherent, not a pile of opinions.
 
 ## Skills
 
+**Core loop** (use these on every feature):
+
 | Command | Persona | Does what |
 |---------|---------|-----------|
-| `/survey` | Tech Lead | Run-once project survey. Where are we, what's the state of things. |
-| `/product-review` | Skeptical PM/Founder | Challenges the feature idea itself. Is this worth building? Scope modes. |
-| `/ux-review` | Senior Designer | ASCII wireframes of key screens. Rates dimensions 0-10. Blunt. |
-| `/arch-review` | Staff Engineer | ASCII data flow diagrams. Architecture, edge cases, failure modes. |
-| `/fresh-eyes` | Fresh-context adversary | Clean-context subagent review. No shared state with prior reviews. |
-| `/implement` | Senior Engineer | Builds the feature against approved reviews. Tests alongside code. Atomic commits. |
-| `/code-review` | Adversarial Reviewer | Post-implementation. Finds production bugs. ASCII execution diagrams. |
-| `/quality-check` | QA Engineer | E2E browser testing via playwright-cli. Click, verify, screenshot. |
+| `/survey` | Tech Lead | Creates the plan document. Orients on codebase state. |
+| `/implement` | Senior Engineer | Builds the feature against the reviewed plan. Tests alongside code. |
+| `/code-review` | Adversarial Reviewer | Post-implementation. Finds production bugs. Scales by diff size. |
+
+**Extended pipeline** (use when the feature warrants it):
+
+| Command | Persona | Does what | Auto-skips when |
+|---------|---------|-----------|-----------------|
+| `/product-review` | Skeptical PM/Founder | Challenges the idea itself. Scope, value, risk. | — |
+| `/ux-review` | Senior Designer | ASCII wireframes. Dimension ratings. AI slop audit. | No UI changes |
+| `/arch-review` | Staff Engineer | Architecture diagrams. Error paths. Failure modes. Promotes plan to repo. | Trivial change |
+| `/fresh-eyes` | Fresh-context adversary | Independent subagent review. No shared state. | < 50 lines changed |
+| `/quality-check` | QA Engineer | E2E browser testing via playwright-cli. | No browser surface |
+
+## How It Works
+
+### One plan document per feature
+
+`/survey` creates a plan at `~/.gauntlette/{repo}/{branch}.md`. Each subsequent skill reads the full plan, does its review, and edits the document — resolving decisions, adding sections, refining what's already there.
+
+The plan lives **outside your repo** during review. Claude edits it aggressively through multiple passes. Bad edits during review don't touch your working tree.
+
+### Promotion
+
+When `/arch-review` clears, the plan is promoted: copied to `.claude/reviews/{branch}.md` inside your repo and the scratch copy is deleted. From that point, `/implement` and `/code-review` work against the in-repo plan. It can be committed alongside your code.
+
+### Review Report
+
+Every plan has a Review Report table at the bottom showing which skills have run, their status, and findings. This is the pipeline status tracker.
 
 ## Install
 
@@ -33,9 +55,9 @@ cd gauntlette
 ./install.sh
 ```
 
-This symlinks the skills into `~/.claude/skills/`. If a skill name conflicts with an existing install (e.g. gstack), it skips rather than overwrites.
+This symlinks skills into `~/.claude/skills/`. Conflicts with existing installs (e.g. gstack) are skipped, not overwritten.
 
-For browser-based QA testing (`/quality-check`), also install:
+For browser-based QA (`/quality-check`), also install:
 
 ```bash
 npm install -g @playwright/cli
@@ -47,44 +69,17 @@ Add to your project's CLAUDE.md:
 ```markdown
 ## Gauntlette
 Available skills: /survey, /product-review, /ux-review, /arch-review, /fresh-eyes, /implement, /code-review, /quality-check
-Review artifacts are written to .claude/reviews/
-Code review adversarial depth scales by diff size: <50 skip, 50-199 standard, 200+ full.
-
-## Browser
-Use playwright-cli for all browser interactions. Never use mcp__claude-in-chrome__* tools.
 ```
-
-## Review Artifacts
-
-Every skill writes its output to `.claude/reviews/{skill}-{date}-{time}.md`. These are git-trackable and persist across sessions. The `/code-review` skill checks for stale diagrams from earlier stages.
 
 ## Dependencies
 
 | Dependency | Required by | Install |
 |-----------|-------------|---------|
-| Claude Code v2.1+ | all skills | `npm install -g @anthropic-ai/claude-code` |
+| Claude Code | all skills | `npm install -g @anthropic-ai/claude-code` |
 | Git | all skills | comes with your OS |
-| playwright-cli | `/qa` only | `npm install -g @playwright/cli && playwright-cli install --skills` |
+| playwright-cli | `/quality-check` only | `npm install -g @playwright/cli` |
 
 No Bun. No compiled binaries. No config directories. No state files.
-
-## Shared Prompting Rules (all skills follow these)
-
-**One issue, one question.** Never batch multiple issues into a single question. Present one issue, recommend a course of action, explain why, and STOP. Wait for the human to respond before moving to the next issue.
-
-**Re-ground every question.** State the project name, current branch, and what step you're on. Context drifts. Fight it.
-
-**Smart-skip.** If the user's prompt already answers a question you were going to ask, skip it. Don't ask people to repeat themselves.
-
-**Completeness over shortcuts.** AI makes the marginal cost of doing the complete thing near-zero. Recommend the complete option (all edge cases, all error handling, all tests) unless the scope is genuinely an "ocean" (multi-quarter migration). If it's a "lake," boil it.
-
-**See something, say something.** If you notice something wrong during ANY step — not just the step you're on — flag it in one sentence. What you noticed, what the impact is. Then move on. Don't silently pass over issues because they're "not your job right now."
-
-**Iron rule on regressions.** If you broke something that previously worked, write a regression test IMMEDIATELY. No asking. No skipping. Regressions are the highest-priority test.
-
-**Search before building.** Before implementing unfamiliar patterns or infrastructure, search whether the framework/runtime has a built-in. Don't reinvent.
-
-**Complexity threshold.** If a plan or implementation touches 8+ files or introduces 2+ new classes/services, proactively recommend scope reduction. Explain what's overbuilt, propose a minimal version, ask whether to reduce or proceed.
 
 ## Principles
 
@@ -93,4 +88,5 @@ No Bun. No compiled binaries. No config directories. No state files.
 - No "wow, great insight!" — personas are direct, blunt, and rude when warranted.
 - ASCII diagrams are mandatory for non-trivial flows.
 - Each skill is one self-contained SKILL.md. No shared libraries, no binaries.
-- Review output is captured to disk, not lost in scrollback.
+- One plan document per feature. Skills edit it, not append to it.
+- Plans live outside the repo during review, inside the repo after promotion.
