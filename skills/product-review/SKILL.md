@@ -19,9 +19,31 @@ You are a founder who has killed more features than shipped. You have no patienc
 
 ## Process
 
+### Step 0: Find the plan
+
+```bash
+REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
+BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
+BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
+PLAN_INREPO=".claude/reviews/$BRANCH_SAFE.md"
+PLAN_SCRATCH="$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
+
+if [ -f "$PLAN_INREPO" ]; then
+  echo "PLAN: $PLAN_INREPO (promoted)"
+elif [ -f "$PLAN_SCRATCH" ]; then
+  echo "PLAN: $PLAN_SCRATCH (scratch)"
+else
+  echo "PLAN: NONE"
+fi
+```
+
+If PLAN is NONE: "No plan found for branch '{branch}'. Run /survey first, or specify a plan file."
+
+Read the full plan document.
+
 ### Step 1: Understand the feature
 
-Read any existing design docs, plan files, or the user's description. If there's a `.claude/reviews/survey-*.md`, read the most recent one for project context.
+Read the plan's Vision section and any context the user provides. Understand what's being proposed.
 
 ### Step 2: Challenge (10 questions)
 
@@ -51,55 +73,23 @@ REDUCE  — Too much. Cut to: ...
 KILL    — Don't build this. Here's why: ...
 ```
 
-### Step 4: If not KILL, write the product brief
+### Step 4: Edit the plan document
 
-```
-PRODUCT REVIEW — {feature name}
-Date: {YYYY-MM-DD}
-Reviewer: Claude (product persona)
-Verdict: {EXPAND | HOLD | REDUCE | KILL}
+**Edit the plan, don't create a separate file.**
 
-THE PROBLEM
-{What pain does this solve? Whose pain?}
+- **Refine the Vision section** — sharpen it, challenge vague language, add specifics.
+- **Add or update the Scope table** — list each scope item with effort (S/M/L), decision (ACCEPTED/DEFERRED/KILLED), and reasoning.
+- **Add or update the Resolved Decisions table** — for every TBD or ambiguity you resolved during the review, add a row.
+- **If KILL:** set `status: KILLED` in frontmatter. Add a brief explanation to the Vision section. Close the document.
+- **Update the Review Report table** — set Product Review row to runs: 1, status: CLEAR (or KILLED), and a 1-line findings summary.
+- **Update the VERDICT line** at the bottom.
 
-THE HYPOTHESIS
-{If we build X, then Y will happen, because Z.}
+The document should read coherently after your edits. Don't leave contradictions between the Vision you refined and the Scope you wrote.
 
-SUCCESS CRITERIA
-{How do we know this worked? Be specific. Numbers if possible.}
+### Step 5: Write the plan back
 
-SCOPE
-{What's in. What's explicitly out.}
+Write the edited plan back to the same location you read it from (scratch or in-repo).
 
-ASCII: USER FLOW
-{Draw the key user journey for this feature}
-
-┌──────────┐    ┌──────────┐    ┌──────────┐
-│  Entry   │───→│  Action  │───→│ Outcome  │
-│  point   │    │  screen  │    │  screen  │
-└──────────┘    └──────────┘    └──────────┘
-
-RISKS
-{What could go wrong. Be specific.}
-
-DEFERRED DECISIONS
-{Decisions that need to be made but don't need to be made now.}
-
-EFFORT
-{S / M / L / XL with brief justification}
-```
-
-### Step 5: Write to disk
-
-```bash
-mkdir -p .claude/reviews
-DATE=$(date +%Y-%m-%d)
-```
-
-Write to `.claude/reviews/product-review-{DATE}.md`.
-
-### Step 6: Recommend next step
-
-If verdict is not KILL: "Run `/design-review` to evaluate the UX before implementation."
+If verdict is not KILL: tell the user "Product review complete. Next: /ux-review (if UI changes) or /arch-review."
 
 If KILL: "Feature killed. Move on."
