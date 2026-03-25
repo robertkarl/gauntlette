@@ -31,7 +31,7 @@ BRANCH=$(git branch --show-current)
 Read ALL review files in `.claude/reviews/`. Extract:
 
 - **From /product-review:** scope, what's in, what's out, success criteria
-- **From /design-review:** ASCII wireframes, state diagrams, interaction flows
+- **From /ux-review:** ASCII wireframes, state diagrams, interaction flows
 - **From /arch-review:** system architecture, data flow diagrams, test matrix, error paths, DRY flags
 - **From /fresh-eyes:** any critical findings that need addressing
 
@@ -87,7 +87,7 @@ If tests fail, fix before moving to the next unit. Do not accumulate broken stat
 
 After implementation is complete, re-read the ASCII diagrams from prior reviews:
 
-- Do the wireframes from `/design-review` match what you built?
+- Do the wireframes from `/ux-review` match what you built?
 - Does the data flow from `/arch-review` match the actual data flow?
 - Did you cover every path in the test matrix?
 - Did you handle every error path that was flagged?
@@ -137,7 +137,7 @@ Run /code-review to review the implementation.
 
 ```bash
 mkdir -p .claude/reviews
-DATE=$(date +%Y-%m-%d)
+DATE=$(date +%Y-%m-%d-%H%M)
 ```
 
 Write to `.claude/reviews/implement-{DATE}.md`.

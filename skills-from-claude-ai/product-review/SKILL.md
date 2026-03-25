@@ -93,13 +93,13 @@ EFFORT
 
 ```bash
 mkdir -p .claude/reviews
-DATE=$(date +%Y-%m-%d)
+DATE=$(date +%Y-%m-%d-%H%M)
 ```
 
 Write to `.claude/reviews/product-review-{DATE}.md`.
 
 ### Step 6: Recommend next step
 
-If verdict is not KILL: "Run `/design-review` to evaluate the UX before implementation."
+If verdict is not KILL: "Run `/ux-review` to evaluate the UX before implementation."
 
 If KILL: "Feature killed. Move on."

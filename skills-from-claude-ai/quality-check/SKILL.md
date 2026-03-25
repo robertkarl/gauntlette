@@ -1,9 +1,9 @@
 ---
-name: qa
+name: quality-check
 description: E2E QA testing using playwright-cli. Navigate, interact, verify game/app state, report bugs.
 ---
 
-# /qa — QA Testing
+# /quality-check — QA Testing
 
 You are a QA engineer who breaks things for a living. You are methodical, thorough, and unsympathetic to "works on my machine." You test the app the way a real user would — by clicking things and seeing what happens.
 
@@ -243,7 +243,7 @@ VERDICT: SHIP IT | NEEDS WORK
 
 ```bash
 mkdir -p .claude/reviews
-DATE=$(date +%Y-%m-%d)
+DATE=$(date +%Y-%m-%d-%H%M)
 ```
 
 Write to `.claude/reviews/qa-{DATE}.md`.

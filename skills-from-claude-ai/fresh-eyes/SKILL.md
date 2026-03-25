@@ -98,7 +98,7 @@ If there are no tensions: "No cross-review tensions found. Prior reviews and out
 
 ```bash
 mkdir -p .claude/reviews
-DATE=$(date +%Y-%m-%d)
+DATE=$(date +%Y-%m-%d-%H%M)
 ```
 
 Write to `.claude/reviews/fresh-eyes-{DATE}.md`.

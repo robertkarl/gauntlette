@@ -203,7 +203,7 @@ If the user explicitly requests full adversarial ("thorough review", "paranoid r
 
 ```bash
 mkdir -p .claude/reviews
-DATE=$(date +%Y-%m-%d)
+DATE=$(date +%Y-%m-%d-%H%M)
 ```
 
 Write to `.claude/reviews/code-review-{DATE}.md`.

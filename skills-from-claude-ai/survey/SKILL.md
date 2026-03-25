@@ -94,7 +94,7 @@ QUESTIONS FOR THE HUMAN
 
 ```bash
 mkdir -p .claude/reviews
-DATE=$(date +%Y-%m-%d)
+DATE=$(date +%Y-%m-%d-%H%M)
 # Write the assessment to .claude/reviews/survey-{date}.md
 ```
 

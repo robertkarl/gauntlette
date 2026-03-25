@@ -7,7 +7,7 @@ Inspired by gstack's structure. Stripped to essentials.
 ## The Gauntlette
 
 ```
-/survey → /product-review → /design-review → /arch-review → /fresh-eyes → /implement → /code-review → /qa
+/survey → /product-review → /ux-review → /arch-review → /fresh-eyes → /implement → /code-review → /quality-check
 ```
 
 Each stage writes findings to `.claude/reviews/` so nothing gets lost. Your feature has to survive every gate.
@@ -18,33 +18,35 @@ Each stage writes findings to `.claude/reviews/` so nothing gets lost. Your feat
 |---------|---------|-----------|
 | `/survey` | Tech Lead | Run-once project survey. Where are we, what's the state of things. |
 | `/product-review` | Skeptical PM/Founder | Challenges the feature idea itself. Is this worth building? Scope modes. |
-| `/design-review` | Senior Designer | ASCII wireframes of key screens. Rates dimensions 0-10. Blunt. |
+| `/ux-review` | Senior Designer | ASCII wireframes of key screens. Rates dimensions 0-10. Blunt. |
 | `/arch-review` | Staff Engineer | ASCII data flow diagrams. Architecture, edge cases, failure modes. |
 | `/fresh-eyes` | Fresh-context adversary | Clean-context subagent review. No shared state with prior reviews. |
 | `/implement` | Senior Engineer | Builds the feature against approved reviews. Tests alongside code. Atomic commits. |
 | `/code-review` | Adversarial Reviewer | Post-implementation. Finds production bugs. ASCII execution diagrams. |
-| `/qa` | QA Engineer | E2E browser testing via playwright-cli. Click, verify, screenshot. |
+| `/quality-check` | QA Engineer | E2E browser testing via playwright-cli. Click, verify, screenshot. |
 
 ## Install
 
-Copy to your Claude Code skills directory:
-
 ```bash
-cp -r gauntlette ~/.claude/skills/gauntlette
+git clone https://github.com/yourusername/gauntlette.git
+cd gauntlette
+./install.sh
 ```
 
-For browser-based QA testing, also install:
+This symlinks the skills into `~/.claude/skills/`. If a skill name conflicts with an existing install (e.g. gstack), it skips rather than overwrites.
+
+For browser-based QA testing (`/quality-check`), also install:
 
 ```bash
 npm install -g @playwright/cli
-playwright-cli install-skill
+playwright-cli install --skills
 ```
 
 Add to your project's CLAUDE.md:
 
 ```markdown
 ## Gauntlette
-Available skills: /survey, /product-review, /design-review, /arch-review, /fresh-eyes, /implement, /code-review, /qa
+Available skills: /survey, /product-review, /ux-review, /arch-review, /fresh-eyes, /implement, /code-review, /quality-check
 Review artifacts are written to .claude/reviews/
 Code review adversarial depth scales by diff size: <50 skip, 50-199 standard, 200+ full.
 
@@ -54,7 +56,7 @@ Use playwright-cli for all browser interactions. Never use mcp__claude-in-chrome
 
 ## Review Artifacts
 
-Every skill writes its output to `.claude/reviews/{skill}-{date}.md`. These are git-trackable and persist across sessions. The `/code-review` skill checks for stale diagrams from earlier stages.
+Every skill writes its output to `.claude/reviews/{skill}-{date}-{time}.md`. These are git-trackable and persist across sessions. The `/code-review` skill checks for stale diagrams from earlier stages.
 
 ## Dependencies
 
@@ -62,7 +64,7 @@ Every skill writes its output to `.claude/reviews/{skill}-{date}.md`. These are 
 |-----------|-------------|---------|
 | Claude Code v2.1+ | all skills | `npm install -g @anthropic-ai/claude-code` |
 | Git | all skills | comes with your OS |
-| playwright-cli | `/qa` only | `npm install -g @playwright/cli && playwright-cli install-skill` |
+| playwright-cli | `/qa` only | `npm install -g @playwright/cli && playwright-cli install --skills` |
 
 No Bun. No compiled binaries. No config directories. No state files.
 

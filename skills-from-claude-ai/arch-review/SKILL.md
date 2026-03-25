@@ -167,7 +167,7 @@ RECOMMENDATION
 
 ```bash
 mkdir -p .claude/reviews
-DATE=$(date +%Y-%m-%d)
+DATE=$(date +%Y-%m-%d-%H%M)
 ```
 
 Write the full review to `.claude/reviews/arch-review-{DATE}.md`.
