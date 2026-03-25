@@ -18,8 +18,9 @@ Be direct. No pleasantries. State findings as facts. If something is bad, say it
 ```bash
 REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
 BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
-PLAN_INREPO=".claude/reviews/$BRANCH.md"
-PLAN_SCRATCH="$HOME/.gauntlette/$REPO/$BRANCH.md"
+BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
+PLAN_INREPO=".claude/reviews/$BRANCH_SAFE.md"
+PLAN_SCRATCH="$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
 
 if [ -f "$PLAN_INREPO" ]; then
   echo "PLAN: $PLAN_INREPO (promoted)"
@@ -42,7 +43,7 @@ Run these commands silently to understand the project:
 
 ```bash
 # Project structure
-find . -type f -name '*.md' | head -20
+find . -type f -name '*.md' -not -path '*/node_modules/*' -not -path '*/.git/*' -not -path '*/vendor/*' | head -20
 ls -la
 cat README.md 2>/dev/null || echo "NO README"
 cat CLAUDE.md 2>/dev/null || echo "NO CLAUDE.md"
@@ -59,7 +60,7 @@ cat package.json 2>/dev/null || cat Cargo.toml 2>/dev/null || cat requirements.t
 find . -path '*/test*' -o -path '*/spec*' -o -path '*__tests__*' | head -20
 
 # TODO/FIXME/HACK inventory
-grep -rn 'TODO\|FIXME\|HACK\|XXX' --include='*.ts' --include='*.js' --include='*.py' --include='*.rs' --include='*.rb' --include='*.swift' . 2>/dev/null | head -30
+grep -rn 'TODO\|FIXME\|HACK\|XXX' --include='*.ts' --include='*.js' --include='*.py' --include='*.rs' --include='*.rb' --include='*.swift' --exclude-dir=node_modules --exclude-dir=vendor --exclude-dir=.git . 2>/dev/null | head -30
 ```
 
 ### Step 2: Create the plan document
@@ -133,6 +134,7 @@ STATUS: {HEALTHY | NEEDS WORK | TROUBLED | ABANDONED}
 ```bash
 REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)")
 BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
+BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
 mkdir -p "$HOME/.gauntlette/$REPO"
 ```
 

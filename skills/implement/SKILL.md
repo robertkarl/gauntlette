@@ -26,8 +26,9 @@ You are a senior engineer who has been handed a reviewed, approved plan and told
 ```bash
 REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
 BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
-PLAN_INREPO=".claude/reviews/$BRANCH.md"
-PLAN_SCRATCH="$HOME/.gauntlette/$REPO/$BRANCH.md"
+BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
+PLAN_INREPO=".claude/reviews/$BRANCH_SAFE.md"
+PLAN_SCRATCH="$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
 
 if [ -f "$PLAN_INREPO" ]; then
   echo "PLAN: $PLAN_INREPO (promoted)"
@@ -114,6 +115,6 @@ Run through this checklist silently:
 
 ### Step 7: Write the plan back
 
-Write the edited plan back to its in-repo location.
+Write the edited plan back to wherever you found it (in-repo or scratch).
 
 "Implementation complete. Run /code-review to review the diff."

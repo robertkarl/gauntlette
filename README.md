@@ -79,7 +79,7 @@ Available skills: /survey, /product-review, /ux-review, /arch-review, /fresh-eye
 | Git | all skills | comes with your OS |
 | playwright-cli | `/quality-check` only | `npm install -g @playwright/cli` |
 
-No Bun. No compiled binaries. No config directories. No state files.
+No Bun. No compiled binaries. No config directories. Plan scratch files live in `~/.gauntlette/` during review.
 
 ## Principles
 

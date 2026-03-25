@@ -24,7 +24,7 @@ User override always wins.
 
 ## Critical Rules
 
-1. **Never refuse to use the browser.** When this skill is invoked, you ARE doing browser-based testing. Even if the diff looks backend-only, backend changes affect app behavior. Always open the browser and test.
+1. **Once past the skip check, never refuse to use the browser.** If skip logic didn't trigger (or was overridden), you ARE doing browser-based testing. Even if the diff looks backend-only, backend changes affect app behavior. Open the browser and test.
 2. **After every screenshot command, use the Read tool on the output PNG.** Without this, screenshots are invisible.
 3. **Navigate once, query many times.** `open` loads the page; then `snapshot`, `screenshot`, `click` all hit the loaded page.
 4. **Use snapshot first, always.** See all interactive elements with their refs before clicking anything.
@@ -37,8 +37,9 @@ User override always wins.
 ```bash
 REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
 BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
-PLAN_INREPO=".claude/reviews/$BRANCH.md"
-PLAN_SCRATCH="$HOME/.gauntlette/$REPO/$BRANCH.md"
+BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
+PLAN_INREPO=".claude/reviews/$BRANCH_SAFE.md"
+PLAN_SCRATCH="$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
 
 if [ -f "$PLAN_INREPO" ]; then
   echo "PLAN: $PLAN_INREPO (promoted)"

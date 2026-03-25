@@ -16,8 +16,10 @@ You (the primary agent) are the orchestrator. You dispatch the subagent, collect
 **Auto-skip for small changes (< 50 lines).** Small changes don't benefit from fresh-context review.
 
 ```bash
-DIFF_LINES=$(git diff main...HEAD --stat 2>/dev/null | tail -1 | grep -oE '[0-9]+ insertion' | grep -oE '[0-9]+' || echo "0")
-echo "DIFF: $DIFF_LINES lines"
+DIFF_INS=$(git diff main...HEAD --stat 2>/dev/null | tail -1 | grep -oE '[0-9]+ insertion' | grep -oE '[0-9]+' || echo "0")
+DIFF_DEL=$(git diff main...HEAD --stat 2>/dev/null | tail -1 | grep -oE '[0-9]+ deletion' | grep -oE '[0-9]+' || echo "0")
+DIFF_LINES=$((DIFF_INS + DIFF_DEL))
+echo "DIFF: $DIFF_LINES lines (ins: $DIFF_INS, del: $DIFF_DEL)"
 ```
 
 If < 50 lines changed: update the Review Report table with `SKIPPED (<50 lines)` and stop.
@@ -31,8 +33,9 @@ User override always wins.
 ```bash
 REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
 BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
-PLAN_INREPO=".claude/reviews/$BRANCH.md"
-PLAN_SCRATCH="$HOME/.gauntlette/$REPO/$BRANCH.md"
+BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
+PLAN_INREPO=".claude/reviews/$BRANCH_SAFE.md"
+PLAN_SCRATCH="$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
 
 if [ -f "$PLAN_INREPO" ]; then
   echo "PLAN: $PLAN_INREPO (promoted)"

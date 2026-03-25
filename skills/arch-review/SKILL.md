@@ -39,8 +39,9 @@ User override always wins.
 ```bash
 REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
 BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
-PLAN_INREPO=".claude/reviews/$BRANCH.md"
-PLAN_SCRATCH="$HOME/.gauntlette/$REPO/$BRANCH.md"
+BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
+PLAN_INREPO=".claude/reviews/$BRANCH_SAFE.md"
+PLAN_SCRATCH="$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
 
 if [ -f "$PLAN_INREPO" ]; then
   echo "PLAN: $PLAN_INREPO (promoted)"
@@ -102,27 +103,28 @@ Component        | Happy Path | Error Path | Edge Cases | Integration
 - **Update Review Report table** — Architecture: runs 1, status CLEAR (or NEEDS REWORK), 1-line summary.
 - **Update VERDICT line.**
 
-### Step 6: Promote the plan
+### Step 6: Write the plan back
 
-**If the review clears (APPROVED or APPROVED WITH CHANGES):** promote the plan from scratch to in-repo.
+Write the edited plan back to the scratch location (`~/.gauntlette/{repo}/{branch}.md`). The edits MUST be written before promotion.
+
+### Step 7: Promote the plan
+
+**If the review clears (APPROVED or APPROVED WITH CHANGES):** promote the plan from scratch to in-repo. This runs AFTER the plan is written with your edits.
 
 ```bash
 REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)")
 BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
+BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
 
 # Only promote if currently in scratch
-if [ -f "$HOME/.gauntlette/$REPO/$BRANCH.md" ] && [ ! -f ".claude/reviews/$BRANCH.md" ]; then
+if [ -f "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md" ] && [ ! -f ".claude/reviews/$BRANCH_SAFE.md" ]; then
   mkdir -p .claude/reviews
-  cp "$HOME/.gauntlette/$REPO/$BRANCH.md" ".claude/reviews/$BRANCH.md"
-  rm "$HOME/.gauntlette/$REPO/$BRANCH.md"
-  echo "PROMOTED: Plan moved to .claude/reviews/$BRANCH.md"
+  cp "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md" ".claude/reviews/$BRANCH_SAFE.md"
+  rm "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
+  echo "PROMOTED: Plan moved to .claude/reviews/$BRANCH_SAFE.md"
 fi
 ```
 
 If the review results in NEEDS REWORK: do NOT promote. The plan stays in scratch for further revision.
-
-### Step 7: Write the plan back
-
-Write the edited plan to its location (scratch if not promoted, in-repo if promoted).
 
 "Architecture review complete. Run /fresh-eyes for an independent adversarial review, or /implement to start building."
