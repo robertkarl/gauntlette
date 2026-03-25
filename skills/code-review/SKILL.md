@@ -101,18 +101,32 @@ Flag deviations: "Plan specified X, implementation does Y."
 
 **Medium tier (50-199 lines):** Dispatch ONE subagent via Agent tool:
 
-> Read the diff with `git diff {base}...HEAD`. Think like an attacker and a chaos engineer. Find ways this code will fail in production. Edge cases, race conditions, security holes, resource leaks, failure modes, silent data corruption, logic errors, swallowed failures, trust boundary violations. Classify as CRITICAL / IMPORTANT / MINOR. No compliments.
+> Read the diff with `git diff {base}...HEAD`. Think like an attacker and a chaos engineer. Find ways this code will fail in production. Edge cases, race conditions, security holes, resource leaks, failure modes, silent data corruption, logic errors, swallowed failures, trust boundary violations. Classify as CRITICAL / IMPORTANT / MINOR and FIXABLE / INVESTIGATE. No compliments.
 
 **Large tier (200+ lines):** Dispatch TWO subagents:
 1. Adversarial (as above)
 2. Maintainability:
 
-> Read the diff with `git diff {base}...HEAD`. You are a new engineer who just joined. For every assumption, ask: documented? Tested? Understandable in 6 months? Look for: implicit coupling, missing docs, unclear naming, pattern deviations, error paths that confuse debuggers. Classify as CRITICAL / IMPORTANT / MINOR. No compliments.
+> Read the diff with `git diff {base}...HEAD`. You are a new engineer who just joined. For every assumption, ask: documented? Tested? Understandable in 6 months? Look for: implicit coupling, missing docs, unclear naming, pattern deviations, error paths that confuse debuggers. Classify as CRITICAL / IMPORTANT / MINOR and FIXABLE / INVESTIGATE. No compliments.
+
+### Step 5b: Present adversarial findings to the user
+
+Present subagent findings verbatim, organized by severity. Then classify each:
+
+- **FIXABLE findings:** Present as a batch to the user. For each: "Adversarial review found: {issue}. Fix? A) Yes B) Skip." Auto-fix only if the fix is mechanical and obvious (e.g., missing null check, unclosed resource). For anything requiring judgment, ask.
+- **INVESTIGATE findings:** Present as informational. "Adversarial review flagged these for investigation: {list}. These require human judgment."
+
+**Cross-review synthesis** (large tier with multiple subagents):
+```
+High confidence (found by multiple subagents): {list — prioritize these}
+Unique to adversarial: {list}
+Unique to maintainability: {list}
+```
 
 ### Step 6: Edit the plan document
 
 If a plan exists:
-- **Update Review Report table** — Code Review: runs 1, status PASS/FAIL, summary of findings by severity.
+- **Update Review Report table** — Code Review: runs 1, status PASS/FAIL, summary of findings by severity and how many the user accepted/skipped.
 - **Flag deviations** inline in the relevant sections.
 - **Update VERDICT line.**
 

@@ -68,17 +68,71 @@ Use the Agent tool to dispatch a subagent. Do NOT include any findings from prio
 
 > Read the file at {plan path}. You are a hostile technical reviewer. Find flaws that will cause problems during implementation or in production. Look for: missing error handling, unstated assumptions, scope creep, over-engineering, under-engineering, security gaps, scalability issues, things that sound good in a doc but don't work in practice. Classify each as CRITICAL / IMPORTANT / MINOR and FIXABLE / INVESTIGATE. No compliments. If the plan is solid, say "No issues found."
 
-### Step 3: Integrate findings into the plan
+### Step 3: Present findings verbatim
 
-**Edit the plan, don't create a separate file.**
+Present the subagent's findings verbatim, organized by severity:
 
-- **Integrate findings into the relevant sections** — if the subagent found an error path gap, add it to the Architecture section. If it found a scope issue, update the Scope table. Don't silo findings into a "Fresh Eyes" section.
-- **For tensions between sections:** add inline notes: "> **[fresh-eyes]:** Prior review said X, but this contradicts Y because Z."
-- **Add to Resolved Decisions** if the fresh-eyes findings resolved ambiguities.
-- **Update Review Report table** — Fresh Eyes: runs 1, status CLEAR, 1-line summary of findings count by severity.
+```
+FRESH EYES FINDINGS
+Subagent: Claude (fresh context, no prior review state)
+
+CRITICAL
+- ...
+
+IMPORTANT
+- ...
+
+MINOR
+- ...
+```
+
+**Do NOT auto-apply findings.** The outside voice is informational. The user decides what to act on.
+
+### Step 4: Cross-review tension analysis
+
+Read the plan document. Compare the subagent's findings against existing sections. Surface disagreements:
+
+```
+CROSS-REVIEW TENSIONS
+
+{Topic}: Plan says X. Outside voice says Y.
+Assessment: {your assessment of who's right, or "genuinely ambiguous — human decision needed"}
+```
+
+If no tensions: "No cross-review tensions. Plan and outside voice are aligned."
+
+### Step 5: Walk through findings with the user
+
+For each CRITICAL or IMPORTANT finding, present it as a single AskUserQuestion:
+
+> **Fresh eyes found:** {1-sentence description of the finding}
+>
+> **The plan currently says:** {what the relevant section says}
+>
+> **Outside voice argues:** {the subagent's point}
+>
+> A) Fix it — incorporate this into the plan
+> B) Skip — not substantive
+> C) Add to deferred — note it but don't fix now
+
+**STOP and wait** for the user's response before moving to the next finding.
+
+MINOR findings: present as a batch at the end. "The outside voice also noted these minor items: {list}. Want me to fix any of them?"
+
+### Step 6: Apply user-approved fixes
+
+For each finding the user approved (option A):
+- Edit the relevant section of the plan document
+- Add a row to Resolved Decisions if the finding resolved an ambiguity
+
+For skipped findings: do nothing.
+
+For deferred findings: add a note to the Scope table as DEFERRED.
+
+### Step 7: Update Review Report and write back
+
+- **Update Review Report table** — Fresh Eyes: runs 1, status CLEAR, summary (e.g., "14 findings: 3 critical, 5 important, 6 minor. User accepted 10, skipped 4.").
 - **Update VERDICT line.**
-
-### Step 4: Write the plan back
 
 Write the edited plan back to the same location you read it from.
 
