@@ -12,7 +12,7 @@ There is no telemetry, and it includes an uninstaller.
 
 ```
 /survey → /product-review → /ux-review → /arch-review
-    → /fresh-eyes → /implement → /code-review → /quality-check
+    → /fresh-eyes → /implement → /code-review → /quality-check → /ship-it
 ```
 
 Each skill reads the plan, does its job, and edits the plan with its findings. One document in, one document out — coherent, not a pile of opinions.
@@ -26,6 +26,7 @@ Each skill reads the plan, does its job, and edits the plan with its findings. O
 | `/survey` | Tech Lead | Creates the plan document. Orients on codebase state. |
 | `/implement` | Senior Engineer | Builds the feature against the reviewed plan. Tests alongside code. |
 | `/code-review` | Adversarial Reviewer | Post-implementation. Finds production bugs. Scales by diff size. |
+| `/ship-it` | Release Engineer | Merge, test, review, version bump, changelog, merge to master. |
 
 **Extended pipeline** (use when the feature warrants it):
 
@@ -74,7 +75,7 @@ Add to your project's CLAUDE.md:
 
 ```markdown
 ## Gauntlette
-Available skills: /survey, /product-review, /ux-review, /arch-review, /fresh-eyes, /implement, /code-review, /quality-check
+Available skills: /survey, /product-review, /ux-review, /arch-review, /fresh-eyes, /implement, /code-review, /quality-check, /ship-it
 ```
 
 ## Dependencies
