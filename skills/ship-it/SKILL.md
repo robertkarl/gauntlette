@@ -59,7 +59,7 @@ Detect and run the project's test suite:
 [ -f package.json ] && grep -q '"test"' package.json 2>/dev/null && echo "TEST_CMD: npm test"
 [ -f Makefile ] && grep -q '^test:' Makefile 2>/dev/null && echo "TEST_CMD: make test"
 [ -f Gemfile ] && echo "TEST_CMD: bundle exec rake test"
-[ -f pytest.ini ] || [ -f pyproject.toml ] && echo "TEST_CMD: pytest"
+([ -f pytest.ini ] || [ -f pyproject.toml ]) && echo "TEST_CMD: pytest"
 [ -f go.mod ] && echo "TEST_CMD: go test ./..."
 [ -f Cargo.toml ] && echo "TEST_CMD: cargo test"
 ls jest.config.* vitest.config.* 2>/dev/null && echo "TEST_CMD: npx vitest run"
