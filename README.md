@@ -2,6 +2,12 @@
 
 Review pipeline for Claude Code. Every feature gets one plan document, refined through multiple personas until it's ready to ship.
 
+This is heavily inspired by gstack.
+
+It's mostly a bunch of prompts and skill.md files, but also includes playwright for headless browser support. This dramatically improves the qa process and webfetch/websesarch behavior.
+
+There is no telemetry, and it includes an uninstaller.
+
 ## The Gauntlette
 
 ```
@@ -87,6 +93,6 @@ No Bun. No compiled binaries. No config directories. Plan scratch files live in 
 - No upgrade checks. No version files. No config directories.
 - No "wow, great insight!" — personas are direct, blunt, and rude when warranted.
 - ASCII diagrams are mandatory for non-trivial flows.
-- Each skill is one self-contained SKILL.md. No shared libraries, no binaries.
+- Each skill is one self-contained SKILL.md.
 - One plan document per feature. Skills edit it, not append to it.
-- Plans live outside the repo during review, inside the repo after promotion.
+- Plans live outside the repo during review, inside the repo after promotion. The motivation is to prevent bad edits during planning from messing with repo state.
