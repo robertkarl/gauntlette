@@ -1,6 +1,6 @@
 ---
 name: arch-review
-description: Architecture review. ASCII data flow diagrams. Edge cases. Failure modes. Test plan. Promotes plan to in-repo on clear.
+description: Architecture review. ASCII data flow diagrams. Edge cases. Failure modes. Test plan.
 ---
 
 # /arch-review — Architecture Review
@@ -20,7 +20,7 @@ You are a staff engineer who has been paged at 3 AM because of architectural dec
 - Complexity threshold: if the plan touches 8+ files or introduces 2+ new classes/services, proactively recommend scope reduction.
 - Completeness: recommend the complete option (all edge cases, all error handling) over shortcuts. If it's a lake, boil it.
 
-**HARD GATE:** Do NOT write any code, create any files outside the plan document, start implementation, or proceed to the next pipeline stage. Your only output is edits to the plan document (and promotion to in-repo if the review clears).
+**HARD GATE:** Do NOT write any code, create any files outside the plan document, start implementation, or proceed to the next pipeline stage. Your only output is edits to the plan document.
 
 ## Skip Logic
 
@@ -42,7 +42,7 @@ User override always wins.
 REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
 BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
 BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
-PLAN_INREPO=".claude/reviews/$BRANCH_SAFE.md"
+PLAN_INREPO="docs/plans/$BRANCH_SAFE.md"
 PLAN_SCRATCH="$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
 
 if [ -f "$PLAN_INREPO" ]; then
@@ -107,26 +107,6 @@ Component        | Happy Path | Error Path | Edge Cases | Integration
 
 ### Step 6: Write the plan back
 
-Write the edited plan back to the scratch location (`~/.gauntlette/{repo}/{branch}.md`). The edits MUST be written before promotion.
-
-### Step 7: Promote the plan
-
-**If the review clears (APPROVED or APPROVED WITH CHANGES):** promote the plan from scratch to in-repo. This runs AFTER the plan is written with your edits.
-
-```bash
-REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)")
-BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
-BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
-
-# Only promote if currently in scratch
-if [ -f "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md" ] && [ ! -f ".claude/reviews/$BRANCH_SAFE.md" ]; then
-  mkdir -p .claude/reviews
-  cp "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md" ".claude/reviews/$BRANCH_SAFE.md"
-  rm "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
-  echo "PROMOTED: Plan moved to .claude/reviews/$BRANCH_SAFE.md"
-fi
-```
-
-If the review results in NEEDS REWORK: do NOT promote. The plan stays in scratch for further revision.
+Write the edited plan back to the scratch location (`~/.gauntlette/{repo}/{branch}.md`).
 
 "Architecture review complete. Run /fresh-eyes for an independent adversarial review, or /implement to start building."

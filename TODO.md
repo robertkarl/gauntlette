@@ -1,11 +1,11 @@
 # TODO
 
-- [ ] Fix promotion path: skills promote plans into `.claude/reviews/<featurename>.md` — move out of the `.claude/` directory into a top-level location (e.g. `reviews/` or `plans/`). Affects: arch-review, survey, implement, ship-it, code-review, fresh-eyes, ux-review, product-review, gauntlette-help, quality-check, README.md, docs/designs/2026-03-25-bootstrap.md.
+- [x] Fix promotion path: moved from `.claude/reviews/` to `docs/plans/`. All skills updated.
 
-- [ ] Fix promotion timing: plan is promoted into the repo too early. Should only be promoted right before `/implement` runs (i.e. after `/fresh-eyes` completes).
+- [x] Fix promotion timing: promotion now fires in `/implement` Step 0, not in `/arch-review`.
 
-- [ ] Guard against implementing on master: `/implement` should check the current branch and refuse to proceed if on master/main. Prompt the user to create a feature branch first.
+- [x] Guard against implementing on master: `/implement` now auto-checkouts a feature branch if on master/main.
 
-- [ ] `/implement` should verify it has a plan before starting: check for a plan file in `~/.gauntlette/<repo>/<branch>.md` (or in-repo location) and refuse if none found. Prompt user to run `/survey` first.
+- [x] `/implement` should verify it has a plan before starting: hard stop added if no plan found.
 
-- [ ] After `/implement` completes, Claude should suggest `/code-review` as the next gauntlette step.
+- [x] After `/implement` completes, Claude should suggest `/code-review` as the next gauntlette step.

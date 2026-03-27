@@ -27,7 +27,7 @@ You are a senior engineer who has been handed a reviewed, approved plan and told
 REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
 BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
 BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
-PLAN_INREPO=".claude/reviews/$BRANCH_SAFE.md"
+PLAN_INREPO="docs/plans/$BRANCH_SAFE.md"
 PLAN_SCRATCH="$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
 
 if [ -f "$PLAN_INREPO" ]; then
@@ -39,15 +39,30 @@ else
 fi
 ```
 
-If PLAN is NONE: "No plan found for branch '{branch}'. Run /survey first, or specify a plan file." then exit.
+If PLAN is NONE: stop with "No plan found for branch '{branch}'. Run /survey first." Do not proceed.
 
-**Prerequisite check:** Read the plan's Review Report table. If Product Review and Architecture are both missing (no runs), warn: "This plan has no product or architecture review. /implement will have less context. Run /product-review and /arch-review first?"
+**Branch check:** If on `master` or `main`, derive a branch name from the plan filename (e.g. plan `bugfixes.md` → branch `bugfixes`). Run `git checkout -b {name}`. Do not ask — just do it. If the branch already exists, run `git checkout {name}`.
 
-**Prerequisite check:** If we are on master branch; pick a branch name derived from the plan file. Use "checkout -b" to switch to it.
+**Promote plan:** If the plan is in scratch (`~/.gauntlette/{repo}/{branch}.md`) and not yet in-repo, promote it now:
 
-**Prerequisite check:** If the context is full of messages, warn: "Clear context first. Claude is unable to perform this automatically." Then pause.
+```bash
+REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)")
+BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
+BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
 
-Warning, not gate. User can always proceed.
+if [ -f "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md" ] && [ ! -f "docs/plans/$BRANCH_SAFE.md" ]; then
+  mkdir -p docs/plans
+  cp "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md" "docs/plans/$BRANCH_SAFE.md"
+  rm "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
+  echo "PROMOTED: docs/plans/$BRANCH_SAFE.md"
+fi
+```
+
+**Context check:** If this conversation has more than ~50 prior messages, warn: "Context is large — consider /clear and restarting /implement with the plan path." Then pause and wait for the user to confirm before proceeding.
+
+**Review check:** Read the plan's Review Report table. If Product Review and Architecture are both missing (no runs), warn: "This plan has no product or architecture review. /implement will have less context. Run /product-review and /arch-review first?" Wait for user confirmation.
+
+Warnings (review, context) are not gates — user can always proceed. Branch check and plan check are hard stops.
 
 ### Step 1: Load context
 
@@ -122,3 +137,5 @@ Run through this checklist silently:
 Write the edited plan back to wherever you found it (in-repo or scratch).
 
 "Implementation complete. Run /code-review to review the diff."
+
+**Next step in the gauntlette pipeline: `/code-review`**

@@ -2,4 +2,4 @@
 *.swp
 *.swo
 *~
-.claude/reviews
+# docs/plans/ is intentionally committed — do not ignore it

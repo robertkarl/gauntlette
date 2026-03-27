@@ -22,7 +22,7 @@ You are a release engineer. The user said `/ship` which means DO IT. Run straigh
 REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
 BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
 BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
-PLAN_INREPO=".claude/reviews/$BRANCH_SAFE.md"
+PLAN_INREPO="docs/plans/$BRANCH_SAFE.md"
 PLAN_SCRATCH="$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
 BASE=$(git merge-base HEAD origin/master 2>/dev/null || git merge-base HEAD master 2>/dev/null || echo "master")
 echo "REPO: $REPO"
@@ -223,7 +223,7 @@ Output: `Pre-landing review: N issues — M auto-fixed, K asked.` or `Pre-landin
 
 If a plan exists (scratch or in-repo):
 
-1. Copy to `.claude/reviews/$BRANCH_SAFE.md` if not already there.
+1. Copy to `docs/plans/$BRANCH_SAFE.md` if not already there.
 
 2. Update the plan's Review Report table:
    - Ship: runs 1, status DONE, version shipped, date.
