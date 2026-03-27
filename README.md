@@ -4,7 +4,7 @@ Review pipeline for Claude Code. Every feature gets one plan document, refined t
 
 This is heavily inspired by gstack.
 
-It's mostly a bunch of prompts and skill.md files, but also includes playwright for headless browser support. This dramatically improves the qa process and webfetch/websesarch behavior.
+It's mostly a bunch of prompts and skill.md files, but also includes playwright for headless browser support. This dramatically improves the QA process and web fetch/search behavior.
 
 There is no telemetry, and it includes an uninstaller.
 
@@ -18,6 +18,12 @@ There is no telemetry, and it includes an uninstaller.
 Each skill reads the plan, does its job, and edits the plan with its findings. One document in, one document out — coherent, not a pile of opinions.
 
 ## Skills
+
+**Utility:**
+
+| Command | Does what |
+|---------|-----------|
+| `/gauntlette` | Shows the pipeline, available skills, and current plan status. |
 
 **Core loop** (use these on every feature):
 
@@ -57,7 +63,7 @@ Every plan has a Review Report table at the bottom showing which skills have run
 ## Install
 
 ```bash
-git clone https://github.com/yourusername/gauntlette.git
+git clone https://github.com/robertkarl/gauntlette.git
 cd gauntlette
 ./install.sh
 ```
@@ -67,15 +73,14 @@ This symlinks skills into `~/.claude/skills/`. Conflicts with existing installs 
 For browser-based QA (`/quality-check`), also install:
 
 ```bash
-npm install -g @playwright/cli
-playwright-cli install --skills
+npx playwright install
 ```
 
 Add to your project's CLAUDE.md:
 
 ```markdown
 ## Gauntlette
-Available skills: /survey, /product-review, /ux-review, /arch-review, /fresh-eyes, /implement, /code-review, /quality-check, /ship-it
+Available skills: /gauntlette, /survey, /product-review, /ux-review, /arch-review, /fresh-eyes, /implement, /code-review, /quality-check, /ship-it
 ```
 
 ## Dependencies

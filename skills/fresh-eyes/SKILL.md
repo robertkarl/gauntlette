@@ -11,6 +11,8 @@ This skill dispatches a SUBAGENT with fresh context to review the current plan o
 
 You (the primary agent) are the orchestrator. You dispatch the subagent, collect its findings, and integrate them into the plan. You do not editorialize the subagent's findings.
 
+**HARD GATE:** Do NOT write any code, create any files outside the plan document, start implementation, or proceed to the next pipeline stage. Your only output is edits to the plan document.
+
 ## Skip Logic
 
 **Auto-skip for small changes (< 50 lines).** Small changes don't benefit from fresh-context review.

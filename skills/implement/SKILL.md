@@ -39,9 +39,13 @@ else
 fi
 ```
 
-If PLAN is NONE: "No plan found for branch '{branch}'. Run /survey first, or specify a plan file."
+If PLAN is NONE: "No plan found for branch '{branch}'. Run /survey first, or specify a plan file." then exit.
 
 **Prerequisite check:** Read the plan's Review Report table. If Product Review and Architecture are both missing (no runs), warn: "This plan has no product or architecture review. /implement will have less context. Run /product-review and /arch-review first?"
+
+**Prerequisite check:** If we are on master branch; pick a branch name derived from the plan file. Use "checkout -b" to switch to it.
+
+**Prerequisite check:** If the context is full of messages, warn: "Clear context first. Claude is unable to perform this automatically." Then pause.
 
 Warning, not gate. User can always proceed.
 
