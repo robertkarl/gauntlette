@@ -232,6 +232,12 @@ If a plan exists (scratch or in-repo):
 
 4. Write the plan back.
 
+5. Stage and commit the plan file:
+   ```bash
+   git add "docs/plans/$BRANCH_SAFE.md"
+   git commit -m "chore: promote plan docs/plans/$BRANCH_SAFE.md (shipped vX.Y.Z.W)"
+   ```
+
 If no plan exists, skip silently.
 
 ---

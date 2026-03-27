@@ -29,7 +29,7 @@ fi
 
 ### Step 2: Determine current stage
 
-If a plan exists, read the **Gauntlette Review Report** table at the bottom of the plan. Find the last skill with status `DONE` — the *next* skill in the pipeline is the current stage. If no skill has run, the current stage is `/survey`.
+If a plan exists, read the **Gauntlette Review Report** table at the bottom of the plan. Find the last skill with status `DONE` or `SKIPPED` (any SKIPPED variant counts as completed) — the *next* skill in the pipeline is the current stage. If no skill has run or been skipped, the current stage is `/survey`.
 
 If no plan exists, the current stage is `/survey`.
 

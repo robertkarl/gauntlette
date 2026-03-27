@@ -23,6 +23,19 @@ You are a senior engineer who has been handed a reviewed, approved plan and told
 
 ### Step 0: Find the plan
 
+**If on `master` or `main`:** Do not use the branch name to find the plan — it won't match. Instead, list available scratch plans:
+
+```bash
+REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
+ls "$HOME/.gauntlette/$REPO/" 2>/dev/null
+```
+
+If one plan exists, use it. If multiple exist, ask which one. If none exist, stop: "No plan found. Run /survey first and provide a feature name."
+
+Once a plan filename is known (e.g. `bugfixes.md`), derive the branch name from it (strip `.md`). Run `git checkout -b {name}`. If the branch already exists, run `git checkout {name}`. Then set `BRANCH_SAFE` to the derived name.
+
+**If on a feature branch:** Use standard lookup:
+
 ```bash
 REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
 BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
@@ -41,8 +54,6 @@ fi
 
 If PLAN is NONE: stop with "No plan found for branch '{branch}'. Run /survey first." Do not proceed.
 
-**Branch check:** If on `master` or `main`, derive a branch name from the plan filename (e.g. plan `bugfixes.md` → branch `bugfixes`). Run `git checkout -b {name}`. Do not ask — just do it. If the branch already exists, run `git checkout {name}`.
-
 **Promote plan:** If the plan is in scratch (`~/.gauntlette/{repo}/{branch}.md`) and not yet in-repo, promote it now:
 
 ```bash
@@ -52,17 +63,14 @@ BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
 
 if [ -f "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md" ] && [ ! -f "docs/plans/$BRANCH_SAFE.md" ]; then
   mkdir -p docs/plans
-  cp "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md" "docs/plans/$BRANCH_SAFE.md"
-  rm "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
+  cp "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md" "docs/plans/$BRANCH_SAFE.md" && rm "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
   echo "PROMOTED: docs/plans/$BRANCH_SAFE.md"
 fi
 ```
 
-**Context check:** If this conversation has more than ~50 prior messages, warn: "Context is large — consider /clear and restarting /implement with the plan path." Then pause and wait for the user to confirm before proceeding.
+**Review check:** Read the plan's Review Report table. If Product Review and Architecture are both missing (Runs = 0 and Status is not SKIPPED), warn: "This plan has no product or architecture review. /implement will have less context. Run /product-review and /arch-review first?" Wait for user confirmation.
 
-**Review check:** Read the plan's Review Report table. If Product Review and Architecture are both missing (no runs), warn: "This plan has no product or architecture review. /implement will have less context. Run /product-review and /arch-review first?" Wait for user confirmation.
-
-Warnings (review, context) are not gates — user can always proceed. Branch check and plan check are hard stops.
+Review check is not a gate — user can always proceed. Plan-not-found is a hard stop.
 
 ### Step 1: Load context
 
@@ -134,7 +142,7 @@ Run through this checklist silently:
 
 ### Step 7: Write the plan back
 
-Write the edited plan back to wherever you found it (in-repo or scratch).
+Write the edited plan to `docs/plans/$BRANCH_SAFE.md` (the in-repo location, which was set during promotion in Step 0). Do not write to scratch — it was deleted during promotion.
 
 "Implementation complete. Run /code-review to review the diff."
 

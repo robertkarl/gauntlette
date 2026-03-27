@@ -39,7 +39,7 @@ else
 fi
 ```
 
-If PLAN is NONE: "No plan found for branch '{branch}'. Run /survey first, or specify a plan file."
+If PLAN is NONE: "No plan found for branch '{branch}'. Run /survey first."
 
 Read the full plan document.
 

@@ -18,8 +18,9 @@ You (the primary agent) are the orchestrator. You dispatch the subagent, collect
 **Auto-skip for small changes (< 50 lines).** Small changes don't benefit from fresh-context review.
 
 ```bash
-DIFF_INS=$(git diff main...HEAD --stat 2>/dev/null | tail -1 | grep -oE '[0-9]+ insertion' | grep -oE '[0-9]+' || echo "0")
-DIFF_DEL=$(git diff main...HEAD --stat 2>/dev/null | tail -1 | grep -oE '[0-9]+ deletion' | grep -oE '[0-9]+' || echo "0")
+BASE=$(git merge-base HEAD origin/master 2>/dev/null || git merge-base HEAD master 2>/dev/null || git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null || echo "HEAD~1")
+DIFF_INS=$(git diff $BASE --stat 2>/dev/null | tail -1 | grep -oE '[0-9]+ insertion' | grep -oE '[0-9]+' || echo "0")
+DIFF_DEL=$(git diff $BASE --stat 2>/dev/null | tail -1 | grep -oE '[0-9]+ deletion' | grep -oE '[0-9]+' || echo "0")
 DIFF_LINES=$((DIFF_INS + DIFF_DEL))
 echo "DIFF: $DIFF_LINES lines (ins: $DIFF_INS, del: $DIFF_DEL)"
 ```
@@ -64,7 +65,7 @@ Use the Agent tool to dispatch a subagent. Do NOT include any findings from prio
 
 **If reviewing a diff:**
 
-> Read the diff for this branch with `git diff main...HEAD`. You are a hostile code reviewer. Your job is to find ways this code will fail in production. Look for: edge cases, race conditions, security holes, resource leaks, failure modes, silent data corruption, logic errors, error handling that swallows failures, trust boundary violations. For each finding: describe the problem, show the specific code, classify as CRITICAL / IMPORTANT / MINOR and FIXABLE / INVESTIGATE. No compliments. If you find nothing wrong, say "No issues found."
+> Read the diff for this branch with `git diff $(git merge-base HEAD origin/master 2>/dev/null || git merge-base HEAD master 2>/dev/null || git merge-base HEAD origin/main 2>/dev/null || echo HEAD~1)...HEAD`. You are a hostile code reviewer. Your job is to find ways this code will fail in production. Look for: edge cases, race conditions, security holes, resource leaks, failure modes, silent data corruption, logic errors, error handling that swallows failures, trust boundary violations. For each finding: describe the problem, show the specific code, classify as CRITICAL / IMPORTANT / MINOR and FIXABLE / INVESTIGATE. No compliments. If you find nothing wrong, say "No issues found."
 
 **If reviewing a plan:**
 
