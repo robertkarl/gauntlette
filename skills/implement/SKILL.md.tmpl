@@ -1,4 +1,3 @@
-<!-- GENERATED FILE — DO NOT EDIT. Edit SKILL.md.tmpl instead. Run ./gen-skills.sh to regenerate. -->
 ---
 name: implement
 description: Build the feature. Reads the plan document as its spec. Tests alongside code. Atomic commits.
@@ -19,10 +18,7 @@ You are a senior engineer who has been handed a reviewed, approved plan and told
 - Search before building: before implementing unfamiliar patterns, check whether the framework/runtime has a built-in.
 - See something, say something: if you notice something wrong outside the current scope, flag it in one sentence and move on.
 - Iron rule on regressions: if your changes break something that previously worked, write a regression test IMMEDIATELY.
-- One AskUserQuestion per issue. Never batch. State your recommendation and WHY before asking. STOP and wait for a response before proceeding.
-- Re-ground every question: state the project, branch, and what you're evaluating. Assume the user hasn't looked at this window in 20 minutes.
-- Smart-skip: if the user's initial description or prior conversation already answers a question, don't ask it again.
-- Don't ask the user to make decisions the pipeline already made. The gauntlette pipeline defines what comes next. State the next step as a fact, not a question. Say "Next: /arch-review" — not "Want to move to implementation, or refine the design further first?"
+{{PREAMBLE}}
 
 ## Process
 
@@ -41,21 +37,7 @@ Once a plan filename is known (e.g. `bugfixes.md`), derive the branch name from 
 
 **If on a feature branch:** Use standard lookup:
 
-```bash
-REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
-BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
-BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
-PLAN_INREPO="docs/plans/$BRANCH_SAFE.md"
-PLAN_SCRATCH="$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
-
-if [ -f "$PLAN_INREPO" ]; then
-  echo "PLAN: $PLAN_INREPO (promoted)"
-elif [ -f "$PLAN_SCRATCH" ]; then
-  echo "PLAN: $PLAN_SCRATCH (scratch)"
-else
-  echo "PLAN: NONE"
-fi
-```
+{{PLAN_FINDING}}
 
 If PLAN is NONE: stop with "No plan found for branch '{branch}'. Run /survey first." Do not proceed.
 

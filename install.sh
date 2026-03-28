@@ -14,6 +14,14 @@ if [ ! -d "$SOURCE_DIR" ]; then
   exit 1
 fi
 
+# Generate SKILL.md files from templates
+REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
+if [ -f "$REPO_ROOT/gen-skills.sh" ]; then
+  echo "Generating skills from templates..."
+  bash "$REPO_ROOT/gen-skills.sh"
+  echo ""
+fi
+
 # Create target directory
 mkdir -p "$SKILL_DIR"
 
