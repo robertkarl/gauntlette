@@ -23,11 +23,24 @@ You are a senior engineer who has been handed a reviewed, approved plan and told
 
 ### Step 0: Find the plan
 
+**If on `master` or `main`:** Do not use the branch name to find the plan — it won't match. Instead, list available scratch plans:
+
+```bash
+REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
+ls "$HOME/.gauntlette/$REPO/" 2>/dev/null
+```
+
+If one plan exists, use it. If multiple exist, ask which one. If none exist, stop: "No plan found. Run /survey first and provide a feature name."
+
+Once a plan filename is known (e.g. `bugfixes.md`), derive the branch name from it (strip `.md`). Run `git checkout -b {name}`. If the branch already exists, run `git checkout {name}`. Then set `BRANCH_SAFE` to the derived name.
+
+**If on a feature branch:** Use standard lookup:
+
 ```bash
 REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
 BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
 BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
-PLAN_INREPO=".claude/reviews/$BRANCH_SAFE.md"
+PLAN_INREPO="docs/plans/$BRANCH_SAFE.md"
 PLAN_SCRATCH="$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
 
 if [ -f "$PLAN_INREPO" ]; then
@@ -39,11 +52,25 @@ else
 fi
 ```
 
-If PLAN is NONE: "No plan found for branch '{branch}'. Run /survey first, or specify a plan file."
+If PLAN is NONE: stop with "No plan found for branch '{branch}'. Run /survey first." Do not proceed.
 
-**Prerequisite check:** Read the plan's Review Report table. If Product Review and Architecture are both missing (no runs), warn: "This plan has no product or architecture review. /implement will have less context. Run /product-review and /arch-review first?"
+**Promote plan:** If the plan is in scratch (`~/.gauntlette/{repo}/{branch}.md`) and not yet in-repo, promote it now:
 
-Warning, not gate. User can always proceed.
+```bash
+REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)")
+BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
+BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
+
+if [ -f "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md" ] && [ ! -f "docs/plans/$BRANCH_SAFE.md" ]; then
+  mkdir -p docs/plans
+  cp "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md" "docs/plans/$BRANCH_SAFE.md" && rm "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
+  echo "PROMOTED: docs/plans/$BRANCH_SAFE.md"
+fi
+```
+
+**Review check:** Read the plan's Review Report table. If Product Review and Architecture are both missing (Runs = 0 and Status is not SKIPPED), warn: "This plan has no product or architecture review. /implement will have less context. Run /product-review and /arch-review first?" Wait for user confirmation.
+
+Review check is not a gate — user can always proceed. Plan-not-found is a hard stop.
 
 ### Step 1: Load context
 
@@ -115,6 +142,8 @@ Run through this checklist silently:
 
 ### Step 7: Write the plan back
 
-Write the edited plan back to wherever you found it (in-repo or scratch).
+Write the edited plan to `docs/plans/$BRANCH_SAFE.md` (the in-repo location, which was set during promotion in Step 0). Do not write to scratch — it was deleted during promotion.
 
 "Implementation complete. Run /code-review to review the diff."
+
+**Next step in the gauntlette pipeline: `/code-review`**

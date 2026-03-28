@@ -4,7 +4,7 @@ Review pipeline for Claude Code. Every feature gets one plan document, refined t
 
 This is heavily inspired by gstack.
 
-It's mostly a bunch of prompts and skill.md files, but also includes playwright for headless browser support. This dramatically improves the qa process and webfetch/websesarch behavior.
+It's mostly a bunch of prompts and skill.md files, but also includes playwright for headless browser support. This dramatically improves the QA process and web fetch/search behavior.
 
 There is no telemetry, and it includes an uninstaller.
 
@@ -18,6 +18,12 @@ There is no telemetry, and it includes an uninstaller.
 Each skill reads the plan, does its job, and edits the plan with its findings. One document in, one document out — coherent, not a pile of opinions.
 
 ## Skills
+
+**Utility:**
+
+| Command | Does what |
+|---------|-----------|
+| `/gauntlette` | Shows the pipeline, available skills, and current plan status. |
 
 **Core loop** (use these on every feature):
 
@@ -34,7 +40,7 @@ Each skill reads the plan, does its job, and edits the plan with its findings. O
 |---------|---------|-----------|-----------------|
 | `/product-review` | Skeptical PM/Founder | Challenges the idea itself. Scope, value, risk. | — |
 | `/ux-review` | Senior Designer | ASCII wireframes. Dimension ratings. AI slop audit. | No UI changes |
-| `/arch-review` | Staff Engineer | Architecture diagrams. Error paths. Failure modes. Promotes plan to repo. | Trivial change |
+| `/arch-review` | Staff Engineer | Architecture diagrams. Error paths. Failure modes. | Trivial change |
 | `/fresh-eyes` | Fresh-context adversary | Independent subagent review. No shared state. | < 50 lines changed |
 | `/quality-check` | QA Engineer | E2E browser testing via playwright-cli. | No browser surface |
 
@@ -48,7 +54,7 @@ The plan lives **outside your repo** during review. Claude edits it aggressively
 
 ### Promotion
 
-When `/arch-review` clears, the plan is promoted: copied to `.claude/reviews/{branch}.md` inside your repo and the scratch copy is deleted. From that point, `/implement` and `/code-review` work against the in-repo plan. It can be committed alongside your code.
+When `/implement` starts, the plan is promoted: copied to `docs/plans/{branch}.md` inside your repo and the scratch copy is deleted. From that point, `/implement` and `/code-review` work against the in-repo plan. It can be committed alongside your code.
 
 ### Review Report
 
@@ -57,7 +63,7 @@ Every plan has a Review Report table at the bottom showing which skills have run
 ## Install
 
 ```bash
-git clone https://github.com/yourusername/gauntlette.git
+git clone https://github.com/robertkarl/gauntlette.git
 cd gauntlette
 ./install.sh
 ```
@@ -67,15 +73,14 @@ This symlinks skills into `~/.claude/skills/`. Conflicts with existing installs 
 For browser-based QA (`/quality-check`), also install:
 
 ```bash
-npm install -g @playwright/cli
-playwright-cli install --skills
+npx playwright install
 ```
 
 Add to your project's CLAUDE.md:
 
 ```markdown
 ## Gauntlette
-Available skills: /survey, /product-review, /ux-review, /arch-review, /fresh-eyes, /implement, /code-review, /quality-check, /ship-it
+Available skills: /gauntlette, /survey, /product-review, /ux-review, /arch-review, /fresh-eyes, /implement, /code-review, /quality-check, /ship-it
 ```
 
 ## Dependencies

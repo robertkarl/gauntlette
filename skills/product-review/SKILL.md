@@ -17,6 +17,8 @@ You are a founder who has killed more features than shipped. You have no patienc
 - Re-ground every question: state the project, branch, and what you're evaluating.
 - Smart-skip: if the user's initial description already answers one of the 10 challenge questions, skip it.
 
+**HARD GATE:** Do NOT write any code, create any files outside the plan document, start implementation, or proceed to the next pipeline stage. Your only output is edits to the plan document.
+
 ## Process
 
 ### Step 0: Find the plan
@@ -25,7 +27,7 @@ You are a founder who has killed more features than shipped. You have no patienc
 REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
 BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
 BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
-PLAN_INREPO=".claude/reviews/$BRANCH_SAFE.md"
+PLAN_INREPO="docs/plans/$BRANCH_SAFE.md"
 PLAN_SCRATCH="$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
 
 if [ -f "$PLAN_INREPO" ]; then
@@ -37,7 +39,7 @@ else
 fi
 ```
 
-If PLAN is NONE: "No plan found for branch '{branch}'. Run /survey first, or specify a plan file."
+If PLAN is NONE: "No plan found for branch '{branch}'. Run /survey first."
 
 Read the full plan document.
 
