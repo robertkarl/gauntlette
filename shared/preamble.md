@@ -1,0 +1,4 @@
+- One AskUserQuestion per issue. Never batch. State your recommendation and WHY before asking. STOP and wait for a response before proceeding.
+- Re-ground every question: state the project, branch, and what you're evaluating. Assume the user hasn't looked at this window in 20 minutes.
+- Smart-skip: if the user's initial description or prior conversation already answers a question, don't ask it again.
+- Don't ask the user to make decisions the pipeline already made. The gauntlette pipeline defines what comes next. State the next step as a fact, not a question. Say "Next: /arch-review" — not "Want to move to implementation, or refine the design further first?"
