@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.3.0] - 2026-03-28
+
+### Added
+- Template system: `gen-skills.sh` build script resolves `{{PREAMBLE}}` and `{{PLAN_FINDING}}` placeholders from `shared/` into generated `SKILL.md` files.
+- `shared/preamble.md` — canonical one-at-a-time interaction rules injected into all 9 interactive skills.
+- `shared/plan-finding.md` — canonical plan-finding bash snippet, replacing 10 copy-pasted copies.
+- `SKILL.md.tmpl` template files for all 10 skills.
+
+### Changed
+- All `SKILL.md` files are now generated — edit `.tmpl` files instead.
+- `install.sh` runs `gen-skills.sh` before symlinking to ensure generated files are current.
+- Preamble added to 9 skills (gauntlette-help exempt): one question at a time, re-ground context, smart-skip, don't ask what the pipeline decided.
+- Removed "Questions for the Human" anti-pattern from survey template.
+
 ## [0.1.2.0] - 2026-03-27
 
 ### Added
