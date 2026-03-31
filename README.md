@@ -12,8 +12,10 @@ There is no telemetry, and it includes an uninstaller.
 
 ```
 /survey → /product-review → /ux-review → /arch-review
-    → /fresh-eyes → /implement → /code-review → /quality-check → /ship-it
+    → /fresh-eyes → [/cso-review] → /implement → /code-review → /quality-check → /human-review → /ship-it
 ```
+
+`[brackets]` = optional step.
 
 Each skill reads the plan, does its job, and edits the plan with its findings. One document in, one document out — coherent, not a pile of opinions.
 
@@ -42,7 +44,9 @@ Each skill reads the plan, does its job, and edits the plan with its findings. O
 | `/ux-review` | Senior Designer | ASCII wireframes. Dimension ratings. AI slop audit. | No UI changes |
 | `/arch-review` | Staff Engineer | Architecture diagrams. Error paths. Failure modes. | Trivial change |
 | `/fresh-eyes` | Fresh-context adversary | Independent subagent review. No shared state. | < 50 lines changed |
+| `/cso-review` | Chief Security Officer | Security audit: secrets, supply chain, auth, injection, infra. | No security surface |
 | `/quality-check` | QA Engineer | E2E browser testing via playwright-cli. | No browser surface |
+| `/human-review` | Release Coordinator | Checklist of things only humans can do: verify fixes, authorize deploys, meatspace tasks. | — |
 
 ## How It Works
 
@@ -80,7 +84,7 @@ Add to your project's CLAUDE.md:
 
 ```markdown
 ## Gauntlette
-Available skills: /gauntlette, /survey, /product-review, /ux-review, /arch-review, /fresh-eyes, /implement, /code-review, /quality-check, /ship-it
+Available skills: /gauntlette, /survey, /product-review, /ux-review, /arch-review, /fresh-eyes, /cso-review, /implement, /code-review, /quality-check, /human-review, /ship-it
 ```
 
 ## Dependencies
@@ -102,3 +106,18 @@ No Bun. No compiled binaries. No config directories. Plan scratch files live in 
 - Each skill is one self-contained SKILL.md.
 - One plan document per feature. Skills edit it, not append to it.
 - Plans live outside the repo during review, inside the repo after promotion. The motivation is to prevent bad edits during planning from messing with repo state.
+
+## Engineering Axioms
+
+These rules govern how every skill in the pipeline operates. They're injected into all skills via the shared preamble.
+
+1. **Main is sacred.** Feature work happens on feature branches created from main. Ship-it squash merges back. Main is always deployable.
+2. **Tiny fixes go direct.** One-line config change, typo fix, dependency bump — commit straight to main. Don't create a branch for 30 seconds of work.
+3. **Test before fix.** When you hit a bug, write a failing test first. Then fix it. The test proves the bug existed and proves you fixed it. No exceptions.
+4. **Run the tests.** Before committing. Before merging. Before deploying. If they fail, stop.
+5. **One branch, one concern.** A feature branch does one thing. Don't mix a bug fix with a new feature. Don't clean up unrelated code while implementing something.
+6. **Dead branches are dead.** After squash merge to main, the feature branch is a corpse. Never commit to it again. Never check it out expecting it to be current.
+7. **Leave the campsite clean.** After shipping, the repo is on main, tests pass, deploy is green. No dangling state.
+8. **Simplest thing that works.** Don't over-engineer. Don't add abstractions for hypothetical futures. Three similar lines beat a premature helper function.
+9. **Read before you write.** Understand existing code before changing it. Read the CLAUDE.md. Read the plan. Read the tests. Then code.
+10. **Escalate decisions, not problems.** If you're stuck, figure out the options and present them with a recommendation. Don't just say "I'm blocked."

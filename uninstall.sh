@@ -4,7 +4,7 @@ set -e
 SKILL_DIR="$HOME/.claude/skills"
 GAUNTLETTE_DIR="$SKILL_DIR/gauntlette"
 
-SKILLS=(survey product-review ux-review arch-review fresh-eyes implement code-review quality-check)
+SKILLS=(gauntlette-help survey product-review ux-review arch-review fresh-eyes cso-review implement code-review quality-check human-review ship-it)
 
 # Remove individual skill symlinks (only if they point to gauntlette)
 for SKILL in "${SKILLS[@]}"; do

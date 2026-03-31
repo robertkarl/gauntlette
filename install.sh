@@ -6,7 +6,7 @@ GAUNTLETTE_DIR="$SKILL_DIR/gauntlette"
 SOURCE_DIR="$(cd "$(dirname "$0")/skills" && pwd)"
 
 # Skills to install
-SKILLS=(gauntlette-help survey product-review ux-review arch-review fresh-eyes implement code-review quality-check ship-it)
+SKILLS=(gauntlette-help survey product-review ux-review arch-review fresh-eyes cso-review implement code-review quality-check human-review ship-it)
 
 # Check source exists
 if [ ! -d "$SOURCE_DIR" ]; then

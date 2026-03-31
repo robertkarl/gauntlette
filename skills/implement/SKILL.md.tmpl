@@ -24,7 +24,19 @@ You are a senior engineer who has been handed a reviewed, approved plan and told
 
 ### Step 0: Find the plan
 
-**If on `master` or `main`:** Do not use the branch name to find the plan — it won't match. Instead, list available scratch plans:
+**Branch gate — run this FIRST, before anything else:**
+
+```bash
+CURRENT_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
+echo "Current branch: $CURRENT_BRANCH"
+```
+
+- If on `master` or `main`: **Good.** Proceed to plan lookup below.
+- If on a feature branch: **ABORT.** "You're on branch '$CURRENT_BRANCH' but /implement must start from main/master. Run `git checkout main` (or `git checkout master`) first, then re-run /implement." **Do not proceed.**
+
+**Plan lookup (only reached from main/master):**
+
+List available scratch plans:
 
 ```bash
 REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
@@ -33,13 +45,16 @@ ls "$HOME/.gauntlette/$REPO/" 2>/dev/null
 
 If one plan exists, use it. If multiple exist, ask which one. If none exist, stop: "No plan found. Run /survey first and provide a feature name."
 
-Once a plan filename is known (e.g. `bugfixes.md`), derive the branch name from it (strip `.md`). Run `git checkout -b {name}`. If the branch already exists, run `git checkout {name}`. Then set `BRANCH_SAFE` to the derived name.
+Once a plan filename is known (e.g. `bugfixes.md`), derive the branch name from it (strip `.md`).
 
-**If on a feature branch:** Use standard lookup:
+**Create the feature branch from main/master:**
 
-{{PLAN_FINDING}}
+```bash
+git checkout main 2>/dev/null || git checkout master
+git checkout -b {name} 2>/dev/null || git checkout {name}
+```
 
-If PLAN is NONE: stop with "No plan found for branch '{branch}'. Run /survey first." Do not proceed.
+Then set `BRANCH_SAFE` to the derived name.
 
 **Promote plan:** If the plan is in scratch (`~/.gauntlette/{repo}/{branch}.md`) and not yet in-repo, promote it now:
 

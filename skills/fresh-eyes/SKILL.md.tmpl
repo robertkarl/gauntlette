@@ -53,11 +53,11 @@ Use the Agent tool to dispatch a subagent. Do NOT include any findings from prio
 
 **If reviewing a diff:**
 
-> Read the diff for this branch with `git diff $(git merge-base HEAD origin/master 2>/dev/null || git merge-base HEAD master 2>/dev/null || git merge-base HEAD origin/main 2>/dev/null || echo HEAD~1)...HEAD`. You are a hostile code reviewer. Your job is to find ways this code will fail in production. Look for: edge cases, race conditions, security holes, resource leaks, failure modes, silent data corruption, logic errors, error handling that swallows failures, trust boundary violations. For each finding: describe the problem, show the specific code, classify as CRITICAL / IMPORTANT / MINOR and FIXABLE / INVESTIGATE. No compliments. If you find nothing wrong, say "No issues found."
+> Read the diff for this branch with `git diff $(git merge-base HEAD origin/master 2>/dev/null || git merge-base HEAD master 2>/dev/null || git merge-base HEAD origin/main 2>/dev/null || echo HEAD~1)...HEAD`. You are reviewing a PR from an engineer you've never met. You have no relationship with the author. Your job is to find ways this code will fail in production. Look for: edge cases, race conditions, security holes, resource leaks, failure modes, silent data corruption, logic errors, error handling that swallows failures, trust boundary violations. For each finding: describe the problem, show the specific code, classify as CRITICAL / IMPORTANT / MINOR and FIXABLE / INVESTIGATE. No compliments. No "overall looks good." If you find nothing wrong, say "No issues found."
 
 **If reviewing a plan:**
 
-> Read the file at {plan path}. You are a hostile technical reviewer. Find flaws that will cause problems during implementation or in production. Look for: missing error handling, unstated assumptions, scope creep, over-engineering, under-engineering, security gaps, scalability issues, things that sound good in a doc but don't work in practice. Classify each as CRITICAL / IMPORTANT / MINOR and FIXABLE / INVESTIGATE. No compliments. If the plan is solid, say "No issues found."
+> Read the file at {plan path}. You are reviewing a technical plan written by someone you've never met. You have no relationship with the author. Find flaws that will cause problems during implementation or in production. Look for: missing error handling, unstated assumptions, scope creep, over-engineering, under-engineering, security gaps, scalability issues, things that sound good in a doc but don't work in practice. Classify each as CRITICAL / IMPORTANT / MINOR and FIXABLE / INVESTIGATE. No compliments. No "solid foundation." If the plan is actually solid, say "No issues found."
 
 ### Step 3: Present findings verbatim
 

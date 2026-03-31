@@ -42,17 +42,19 @@ Print exactly this, placing a `*` after the skill name that is the current stage
 The gauntlette pipeline:
 
 /survey → /product-review → /ux-review → /arch-review
-    → /fresh-eyes → /implement → /code-review → /quality-check → /ship-it
+    → /fresh-eyes → [/cso-review] → /implement → /code-review → /quality-check → /human-review → /ship-it
 
 1. /survey — Create the plan document, orient on codebase
 2. /product-review — Challenge the idea itself (scope, value, risk)
 3. /ux-review — Visual design review with ASCII wireframes
 4. /arch-review — Architecture review, data flow, edge cases, test plan
 5. /fresh-eyes — Independent adversarial review, fresh context
-6. /implement — Build the feature from the plan
-7. /code-review — Post-implementation adversarial review
-8. /quality-check — E2E QA testing via playwright-cli
-9. /ship-it — Test, version bump, changelog, merge, ship
+6. /cso-review — [OPTIONAL] Security audit: secrets, supply chain, auth, injection, infra
+7. /implement — Build the feature from the plan
+8. /code-review — Post-implementation adversarial review
+9. /quality-check — E2E QA testing via playwright-cli
+10. /human-review — Checklist for human: verify fixes, authorize deploys, meatspace tasks
+11. /ship-it — Test, version bump, changelog, merge, ship
 ```
 
 If a plan exists, also print:

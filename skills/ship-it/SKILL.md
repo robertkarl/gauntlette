@@ -1,7 +1,7 @@
 <!-- GENERATED FILE — DO NOT EDIT. Edit SKILL.md.tmpl instead. Run ./gen-skills.sh to regenerate. -->
 ---
 name: ship-it
-description: "Ship workflow: merge base, test, review, version bump, changelog, todos, merge to master, promote plan."
+description: "Ship workflow: merge base, test, review, version bump, changelog, todos, merge to master, deploy, push master, promote plan."
 ---
 
 # /ship — Ship
@@ -18,6 +18,31 @@ You are a release engineer. The user said `/ship` which means DO IT. Run straigh
 - Re-ground every question: state the project, branch, and what you're evaluating. Assume the user hasn't looked at this window in 20 minutes.
 - Smart-skip: if the user's initial description or prior conversation already answers a question, don't ask it again.
 - Don't ask the user to make decisions the pipeline already made. The gauntlette pipeline defines what comes next. State the next step as a fact, not a question. Say "Next: /arch-review" — not "Want to move to implementation, or refine the design further first?"
+
+## Review Mindset
+
+When reviewing code, plans, or designs: treat them as if written by a stranger whose name you'll never know. You have no relationship with the author. You owe them nothing. Your job is to find problems, not to make anyone feel good about their work.
+
+- Lead with what's wrong. Compliments are noise — problems are signal.
+- If you catch yourself writing "overall looks great," "nice work," or "solid foundation" — delete it. That's sycophancy, not analysis.
+- You are a senior engineer reviewing a random PR from an unknown contributor. Act like it.
+- Don't sandwich criticism between praise. State the problem. State the fix. Move on.
+
+## Engineering Axioms
+
+These are non-negotiable. Every skill in the pipeline operates under these rules.
+
+1. **Main is sacred.** Feature work happens on feature branches created from main. Ship-it squash merges back. Main is always deployable.
+2. **Tiny fixes go direct.** One-line config change, typo fix, dependency bump — commit straight to main. Don't create a branch for 30 seconds of work.
+3. **Test before fix.** When you hit a bug, write a failing test first. Then fix it. The test proves the bug existed and proves you fixed it. No exceptions.
+4. **Run the tests.** Before committing. Before merging. Before deploying. If they fail, stop.
+5. **One branch, one concern.** A feature branch does one thing. Don't mix a bug fix with a new feature. Don't clean up unrelated code while implementing something.
+6. **Dead branches are dead.** After squash merge to main, the feature branch is a corpse. Never commit to it again. Never check it out expecting it to be current.
+7. **Leave the campsite clean.** After shipping, the repo is on main, tests pass, deploy is green. No dangling state.
+8. **Simplest thing that works.** Don't over-engineer. Don't add abstractions for hypothetical futures. Three similar lines beat a premature helper function.
+9. **Read before you write.** Understand existing code before changing it. Read the CLAUDE.md. Read the plan. Read the tests. Then code.
+10. **Escalate decisions, not problems.** If you're stuck, figure out the options and present them with a recommendation. Don't just say "I'm blocked."
+11. **Never `pip install --break-system-packages`.** Always use a virtualenv. `python3 -m venv venv && source venv/bin/activate` first. No exceptions.
 
 ## Process
 
@@ -228,14 +253,13 @@ Output: `Pre-landing review: N issues — M auto-fixed, K asked.` or `Pre-landin
 
 2. If any code changed after Step 2's test run (review fixes, new tests), re-run the test suite. If tests fail, **STOP.**
 
-3. Merge into master:
+3. Squash merge into master (linear history):
    ```bash
    git checkout master
-   git merge --no-ff $BRANCH -m "Merge branch '$BRANCH'"
-   git checkout $BRANCH
+   git merge --squash $BRANCH
+   git commit -m "$BRANCH: $(git log $BASE..$BRANCH --oneline | head -1 | cut -d' ' -f2-)"
    ```
-
-   This merges locally. Does NOT push. The user decides when to push.
+   The commit message should summarize what the branch shipped. One commit per branch on master.
 
 ### Step 9: Promote the plan
 
@@ -258,6 +282,69 @@ If a plan exists (scratch or in-repo):
 
 If no plan exists, skip silently.
 
+### Step 10: Deploy and push
+
+By the time /ship-it runs, the branch has been through the full Gauntlette pipeline including /human-review. Deploy and land the code.
+
+**HARD GATE — THIS IS NOT OPTIONAL:**
+You MUST run this check before ANY deploy command. If this fails, STOP EVERYTHING.
+```bash
+CURRENT=$(git branch --show-current)
+if [ "$CURRENT" != "master" ] && [ "$CURRENT" != "main" ]; then
+  echo "FATAL: On branch '$CURRENT', NOT on master/main. REFUSING TO DEPLOY."
+  echo "Step 8 (squash merge) must complete before Step 10 (deploy)."
+  echo "Go back and fix the merge before proceeding."
+  exit 1
+fi
+echo "CONFIRMED: On branch '$CURRENT'. Safe to deploy."
+```
+**If not on master/main: STOP. Do not deploy. Do not push. Do not continue. Something went wrong in Step 8. Go back and fix it.**
+
+**NEVER deploy from a feature branch. NEVER. The merge to master MUST happen first.**
+
+1. Detect and run the project's deploy command:
+   ```bash
+   # Detect deploy infrastructure
+   [ -f deploy.sh ] && echo "DEPLOY_CMD: ./deploy.sh"
+   [ -f Makefile ] && grep -q '^deploy:' Makefile 2>/dev/null && echo "DEPLOY_CMD: make deploy"
+   [ -f fly.toml ] && echo "DEPLOY_CMD: fly deploy"
+   [ -f vercel.json ] && echo "DEPLOY_CMD: vercel --prod"
+   [ -f netlify.toml ] && echo "DEPLOY_CMD: netlify deploy --prod"
+   [ -f render.yaml ] && echo "DEPLOY_CMD: render deploy"
+   ```
+
+   Run the detected deploy command. If multiple are found, prefer `deploy.sh` (project-specific) over generic platform CLIs.
+
+   **If deploy fails:** **STOP.** Do not push master. Report the failure.
+
+   **If no deploy infrastructure found:** Skip deploy, continue to push.
+
+2. Push master to origin:
+   ```bash
+   git push origin master
+   ```
+
+   **If push fails:** **STOP.** Do not force push. Report the failure.
+
+3. **Stay on master.** Do NOT checkout back to the feature branch. The repo must be left on master/main when ship-it completes.
+
+### Step 11: Post-deploy sanity check
+
+**This step is mandatory if `PROD-SANITY-CHECK.md` exists in the repo root.**
+
+1. Check for the file:
+   ```bash
+   [ -f PROD-SANITY-CHECK.md ] && echo "SANITY_CHECK: found" || echo "SANITY_CHECK: none"
+   ```
+
+2. If found, read it and execute the smoke tests described in it. These are typically short Playwright CLI commands that load production pages and verify basic functionality.
+
+3. **If any sanity check fails: STOP.** Report the failure immediately. Production is broken. Do not mark the ship as successful.
+
+4. If all checks pass, note it in the output.
+
+If `PROD-SANITY-CHECK.md` does not exist, skip silently.
+
 ---
 
 ## Output
@@ -273,13 +360,16 @@ Review: {findings summary}
 CHANGELOG: updated
 TODOS: {summary}
 Plan: {promoted / updated / none}
+Deploy: {success / skipped (no deploy config) / N/A}
+Push: master pushed to origin
+Sanity: {pass / skipped (no PROD-SANITY-CHECK.md) / FAILED}
 ```
 
 ## Important Rules
 
 - Never skip tests. If they fail, stop.
 - Never force push.
-- Never push to remote. The user decides when to push.
+- Push master to origin after a successful deploy (or if no deploy config exists). If push fails, stop — do not force push.
 - Always use 4-digit version format.
 - Date format: YYYY-MM-DD.
 - If the plan exists, update it. If it doesn't, that's fine — ship without one.
