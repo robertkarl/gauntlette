@@ -11,7 +11,7 @@ There is no telemetry, and it includes an uninstaller.
 ## The Gauntlette
 
 ```
-/survey → /product-review → /ux-review → /arch-review
+/survey-and-plan → /product-review → /ux-review → /arch-review
     → /fresh-eyes → [/cso-review] → /implement → /code-review → /quality-check → /human-review → /ship-it
 ```
 
@@ -31,7 +31,7 @@ Each skill reads the plan, does its job, and edits the plan with its findings. O
 
 | Command | Persona | Does what |
 |---------|---------|-----------|
-| `/survey` | Tech Lead | Creates the plan document. Orients on codebase state. |
+| `/survey-and-plan` | Tech Lead + Design Partner | Conversational survey — orients on codebase, scopes feature with user, writes plan. |
 | `/implement` | Senior Engineer | Builds the feature against the reviewed plan. Tests alongside code. |
 | `/code-review` | Adversarial Reviewer | Post-implementation. Finds production bugs. Scales by diff size. |
 | `/ship-it` | Release Engineer | Merge, test, review, version bump, changelog, merge to master. |
@@ -52,7 +52,7 @@ Each skill reads the plan, does its job, and edits the plan with its findings. O
 
 ### One plan document per feature
 
-`/survey` creates a plan at `~/.gauntlette/{repo}/{branch}.md`. Each subsequent skill reads the full plan, does its review, and edits the document — resolving decisions, adding sections, refining what's already there.
+`/survey-and-plan` creates a plan at `~/.gauntlette/{repo}/{branch}.md`. Each subsequent skill reads the full plan, does its review, and edits the document — resolving decisions, adding sections, refining what's already there.
 
 The plan lives **outside your repo** during review. Claude edits it aggressively through multiple passes. Bad edits during review don't touch your working tree.
 
@@ -84,7 +84,7 @@ Add to your project's CLAUDE.md:
 
 ```markdown
 ## Gauntlette
-Available skills: /gauntlette, /survey, /product-review, /ux-review, /arch-review, /fresh-eyes, /cso-review, /implement, /code-review, /quality-check, /human-review, /ship-it
+Available skills: /gauntlette, /survey-and-plan, /product-review, /ux-review, /arch-review, /fresh-eyes, /cso-review, /implement, /code-review, /quality-check, /human-review, /ship-it
 ```
 
 ## Dependencies

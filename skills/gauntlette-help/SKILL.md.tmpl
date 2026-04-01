@@ -15,9 +15,9 @@ Show the user where they are in the gauntlette pipeline. No preamble.
 
 ### Step 2: Determine current stage
 
-If a plan exists, read the **Gauntlette Review Report** table at the bottom of the plan. Find the last skill with status `DONE` or `SKIPPED` (any SKIPPED variant counts as completed) — the *next* skill in the pipeline is the current stage. If no skill has run or been skipped, the current stage is `/survey`.
+If a plan exists, read the **Gauntlette Review Report** table at the bottom of the plan. Find the last skill with status `DONE` or `SKIPPED` (any SKIPPED variant counts as completed) — the *next* skill in the pipeline is the current stage. If no skill has run or been skipped, the current stage is `/survey-and-plan`.
 
-If no plan exists, the current stage is `/survey`.
+If no plan exists, the current stage is `/survey-and-plan`.
 
 ### Step 3: Print the overview
 
@@ -26,10 +26,10 @@ Print exactly this, placing a `*` after the skill name that is the current stage
 ```
 The gauntlette pipeline:
 
-/survey → /product-review → /ux-review → /arch-review
+/survey-and-plan → /product-review → /ux-review → /arch-review
     → /fresh-eyes → [/cso-review] → /implement → /code-review → /quality-check → /human-review → /ship-it
 
-1. /survey — Create the plan document, orient on codebase
+1. /survey-and-plan — Create the plan document, orient on codebase
 2. /product-review — Challenge the idea itself (scope, value, risk)
 3. /ux-review — Visual design review with ASCII wireframes
 4. /arch-review — Architecture review, data flow, edge cases, test plan
@@ -52,7 +52,7 @@ Branch: {branch}
 If no plan exists, print:
 
 ```
-No active plan. Run /survey to start.
+No active plan. Run /survey-and-plan to start.
 ```
 
 That's it. Don't explain what each skill does beyond the one-liner. Don't offer to run anything. Just print and stop.
