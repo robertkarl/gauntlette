@@ -44,6 +44,28 @@ These are non-negotiable. Every skill in the pipeline operates under these rules
 10. **Escalate decisions, not problems.** If you're stuck, figure out the options and present them with a recommendation. Don't just say "I'm blocked."
 11. **Never `pip install --break-system-packages`.** Always use a virtualenv. `python3 -m venv venv && source venv/bin/activate` first. No exceptions.
 
+## Token Usage Reporting
+
+**When your work is complete, before sending your final message, run this:**
+
+```bash
+ESTIMATE_TOOL="$HOME/Code/Moe/tools/estimate-tokens.sh"
+if [ -x "$ESTIMATE_TOOL" ]; then
+  $ESTIMATE_TOOL --latest --json 2>/dev/null | jq -r '"TOKEN ESTIMATE: \(.total_tokens // "unknown")"' 2>/dev/null || echo "TOKEN ESTIMATE: unknown"
+else
+  echo "TOKEN ESTIMATE: tool not found"
+fi
+```
+
+Include the output in your final message, formatted as:
+```
+/STAGE_NAME TOKEN ESTIMATE: <number>
+```
+
+For example: `/SURVEY TOKEN ESTIMATE: 15000`
+
+This helps track which pipeline stages are expensive. Order of magnitude accuracy is fine.
+
 ## Process
 
 ### Step 0: Pre-flight
@@ -95,20 +117,11 @@ If already up to date: continue silently.
 
 ### Step 2: Run tests
 
-Detect and run the project's test suite:
-
 ```bash
-# Detect test infrastructure
-[ -f package.json ] && grep -q '"test"' package.json 2>/dev/null && echo "TEST_CMD: npm test"
-[ -f Makefile ] && grep -q '^test:' Makefile 2>/dev/null && echo "TEST_CMD: make test"
-[ -f Gemfile ] && echo "TEST_CMD: bundle exec rake test"
-([ -f pytest.ini ] || [ -f pyproject.toml ]) && echo "TEST_CMD: pytest"
-[ -f go.mod ] && echo "TEST_CMD: go test ./..."
-[ -f Cargo.toml ] && echo "TEST_CMD: cargo test"
-ls jest.config.* vitest.config.* 2>/dev/null && echo "TEST_CMD: npx vitest run"
+make test
 ```
 
-Run the detected test command. If multiple test suites exist, run them all.
+**This is mandatory.** Every project must have a `make test` target. If the Makefile doesn't have a `test` target, **STOP** with: "FATAL: No `make test` target found in Makefile. Every project must define `make test`. Add it before shipping."
 
 **If tests fail:** Classify each failure:
 
@@ -119,8 +132,6 @@ Run the detected test command. If multiple test suites exist, run them all.
    - When ambiguous, default to in-branch (safer).
 
 **If all pass:** Note the counts, continue.
-
-**If no test infrastructure found:** Note "No tests detected" and continue.
 
 ### Step 3: Test coverage audit
 
@@ -302,22 +313,14 @@ echo "CONFIRMED: On branch '$CURRENT'. Safe to deploy."
 
 **NEVER deploy from a feature branch. NEVER. The merge to master MUST happen first.**
 
-1. Detect and run the project's deploy command:
+1. Deploy:
    ```bash
-   # Detect deploy infrastructure
-   [ -f deploy.sh ] && echo "DEPLOY_CMD: ./deploy.sh"
-   [ -f Makefile ] && grep -q '^deploy:' Makefile 2>/dev/null && echo "DEPLOY_CMD: make deploy"
-   [ -f fly.toml ] && echo "DEPLOY_CMD: fly deploy"
-   [ -f vercel.json ] && echo "DEPLOY_CMD: vercel --prod"
-   [ -f netlify.toml ] && echo "DEPLOY_CMD: netlify deploy --prod"
-   [ -f render.yaml ] && echo "DEPLOY_CMD: render deploy"
+   make deploy
    ```
 
-   Run the detected deploy command. If multiple are found, prefer `deploy.sh` (project-specific) over generic platform CLIs.
+   **This is mandatory.** Every project must have a `make deploy` target. If the Makefile doesn't have a `deploy` target, **STOP** with: "FATAL: No `make deploy` target found in Makefile. Every project must define `make deploy`. Add it before shipping."
 
    **If deploy fails:** **STOP.** Do not push master. Report the failure.
-
-   **If no deploy infrastructure found:** Skip deploy, continue to push.
 
 2. Push master to origin:
    ```bash
@@ -330,20 +333,13 @@ echo "CONFIRMED: On branch '$CURRENT'. Safe to deploy."
 
 ### Step 11: Post-deploy sanity check
 
-**This step is mandatory if `PROD-SANITY-CHECK.md` exists in the repo root.**
+```bash
+make smoke-test
+```
 
-1. Check for the file:
-   ```bash
-   [ -f PROD-SANITY-CHECK.md ] && echo "SANITY_CHECK: found" || echo "SANITY_CHECK: none"
-   ```
+**This is mandatory.** Every project must have a `make smoke-test` target that hits production in a lightweight way to verify the deploy succeeded. If the Makefile doesn't have a `smoke-test` target, **STOP** with: "FATAL: No `make smoke-test` target found in Makefile. Every project must define `make smoke-test`. Add it before shipping."
 
-2. If found, read it and execute the smoke tests described in it. These are typically short Playwright CLI commands that load production pages and verify basic functionality.
-
-3. **If any sanity check fails: STOP.** Report the failure immediately. Production is broken. Do not mark the ship as successful.
-
-4. If all checks pass, note it in the output.
-
-If `PROD-SANITY-CHECK.md` does not exist, skip silently.
+**If any sanity check fails: STOP.** Report the failure immediately. Production may be broken. Do not mark the ship as successful.
 
 ---
 

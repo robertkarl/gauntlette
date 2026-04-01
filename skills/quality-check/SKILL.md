@@ -40,6 +40,28 @@ These are non-negotiable. Every skill in the pipeline operates under these rules
 10. **Escalate decisions, not problems.** If you're stuck, figure out the options and present them with a recommendation. Don't just say "I'm blocked."
 11. **Never `pip install --break-system-packages`.** Always use a virtualenv. `python3 -m venv venv && source venv/bin/activate` first. No exceptions.
 
+## Token Usage Reporting
+
+**When your work is complete, before sending your final message, run this:**
+
+```bash
+ESTIMATE_TOOL="$HOME/Code/Moe/tools/estimate-tokens.sh"
+if [ -x "$ESTIMATE_TOOL" ]; then
+  $ESTIMATE_TOOL --latest --json 2>/dev/null | jq -r '"TOKEN ESTIMATE: \(.total_tokens // "unknown")"' 2>/dev/null || echo "TOKEN ESTIMATE: unknown"
+else
+  echo "TOKEN ESTIMATE: tool not found"
+fi
+```
+
+Include the output in your final message, formatted as:
+```
+/STAGE_NAME TOKEN ESTIMATE: <number>
+```
+
+For example: `/SURVEY TOKEN ESTIMATE: 15000`
+
+This helps track which pipeline stages are expensive. Order of magnitude accuracy is fine.
+
 ## Prerequisites
 
 This skill requires playwright-cli. If not installed:
