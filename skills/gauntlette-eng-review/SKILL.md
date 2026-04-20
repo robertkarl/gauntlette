@@ -1,4 +1,4 @@
-<!-- GENERATED FILE — DO NOT EDIT. Edit SKILL.templ.md instead. Run ./gen-skills.sh to regenerate. -->
+<!-- GENERATED FILE — DO NOT EDIT. Source: skills/gauntlette-eng-review/SKILL.templ.md. Run ./gen-skills.sh to regenerate. -->
 ---
 name: gauntlette-eng-review
 description: Engineering review of the plan. Mermaid + ASCII system diagrams. Data flow, failure modes, edge cases, and test plan.

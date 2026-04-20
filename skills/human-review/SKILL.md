@@ -1,4 +1,4 @@
-<!-- GENERATED FILE — DO NOT EDIT. Edit SKILL.templ.md instead. Run ./gen-skills.sh to regenerate. -->
+<!-- GENERATED FILE — DO NOT EDIT. Source: skills/human-review/SKILL.templ.md. Run ./gen-skills.sh to regenerate. -->
 ---
 name: human-review
 description: "Human review checklist: recurring bugs, authorization gates, meatspace tasks, and sign-off before shipping."

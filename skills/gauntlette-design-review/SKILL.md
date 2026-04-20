@@ -1,4 +1,4 @@
-<!-- GENERATED FILE — DO NOT EDIT. Edit SKILL.templ.md instead. Run ./gen-skills.sh to regenerate. -->
+<!-- GENERATED FILE — DO NOT EDIT. Source: skills/gauntlette-design-review/SKILL.templ.md. Run ./gen-skills.sh to regenerate. -->
 ---
 name: gauntlette-design-review
 description: Design review with ASCII wireframes. Rates design dimensions. Catches AI slop.

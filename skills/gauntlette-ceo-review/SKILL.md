@@ -1,4 +1,4 @@
-<!-- GENERATED FILE — DO NOT EDIT. Edit SKILL.templ.md instead. Run ./gen-skills.sh to regenerate. -->
+<!-- GENERATED FILE — DO NOT EDIT. Source: skills/gauntlette-ceo-review/SKILL.templ.md. Run ./gen-skills.sh to regenerate. -->
 ---
 name: gauntlette-ceo-review
 description: CEO/founder review of the plan. Scope, value, risk. Is this worth building?

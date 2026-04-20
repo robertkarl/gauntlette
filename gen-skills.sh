@@ -13,13 +13,12 @@ GENERATED=0
 SKIPPED=0
 ERRORS=0
 
-HEADER="<!-- GENERATED FILE — DO NOT EDIT. Edit SKILL.templ.md instead. Run ./gen-skills.sh to regenerate. -->"
-
 for TMPL in "$SKILLS_DIR"/*/SKILL.templ.md; do
   [ -f "$TMPL" ] || continue
   SKILL_DIR=$(dirname "$TMPL")
   SKILL_NAME=$(basename "$SKILL_DIR")
   OUTPUT="$SKILL_DIR/SKILL.md"
+  HEADER="<!-- GENERATED FILE — DO NOT EDIT. Source: skills/$SKILL_NAME/SKILL.templ.md. Run ./gen-skills.sh to regenerate. -->"
 
   # Replace placeholders
   CONTENT=$(cat "$TMPL")

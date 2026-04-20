@@ -1,4 +1,4 @@
-<!-- GENERATED FILE — DO NOT EDIT. Edit SKILL.templ.md instead. Run ./gen-skills.sh to regenerate. -->
+<!-- GENERATED FILE — DO NOT EDIT. Source: skills/gauntlette-help/SKILL.templ.md. Run ./gen-skills.sh to regenerate. -->
 ---
 name: gauntlette-help
 description: "Show preferred gauntlette commands, pipeline order, and current plan status."

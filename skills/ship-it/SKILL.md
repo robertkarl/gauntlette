@@ -1,4 +1,4 @@
-<!-- GENERATED FILE — DO NOT EDIT. Edit SKILL.templ.md instead. Run ./gen-skills.sh to regenerate. -->
+<!-- GENERATED FILE — DO NOT EDIT. Source: skills/ship-it/SKILL.templ.md. Run ./gen-skills.sh to regenerate. -->
 ---
 name: ship-it
 description: "Ship workflow: merge base, test, review, version bump, changelog, todos, merge to master, deploy, push master, promote plan."

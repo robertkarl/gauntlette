@@ -65,8 +65,8 @@ BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
 
 if [ -f "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md" ] && [ ! -f "docs/plans/$BRANCH_SAFE.md" ]; then
   mkdir -p docs/plans
-  cp "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md" "docs/plans/$BRANCH_SAFE.md" && rm "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
-  echo "PROMOTED: docs/plans/$BRANCH_SAFE.md"
+  cp "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md" "docs/plans/$BRANCH_SAFE.md"
+  echo "PROMOTED: docs/plans/$BRANCH_SAFE.md (scratch copy retained for agent tracker)"
 fi
 ```
 
@@ -144,7 +144,9 @@ Run through this checklist silently:
 
 ### Step 7: Write the plan back
 
-Write the edited plan to `docs/plans/$BRANCH_SAFE.md` (the in-repo location, which was set during promotion in Step 0). Do not write to scratch — it was deleted during promotion.
+Write the edited plan to **both**:
+1. `docs/plans/$BRANCH_SAFE.md` (in-repo location)
+2. `$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md` (scratch location — kept so agent trackers can still find it)
 
 "Implementation complete. Run /gauntlette-code-review to review the diff."
 

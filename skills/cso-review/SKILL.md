@@ -1,4 +1,4 @@
-<!-- GENERATED FILE — DO NOT EDIT. Edit SKILL.templ.md instead. Run ./gen-skills.sh to regenerate. -->
+<!-- GENERATED FILE — DO NOT EDIT. Source: skills/cso-review/SKILL.templ.md. Run ./gen-skills.sh to regenerate. -->
 ---
 name: cso-review
 description: "CSO security audit of plan and codebase. Secrets, supply chain, auth, network, infra, data privacy, CI/CD, input validation."

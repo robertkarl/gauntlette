@@ -1,4 +1,4 @@
-<!-- GENERATED FILE — DO NOT EDIT. Edit SKILL.templ.md instead. Run ./gen-skills.sh to regenerate. -->
+<!-- GENERATED FILE — DO NOT EDIT. Source: skills/code-review/SKILL.templ.md. Run ./gen-skills.sh to regenerate. -->
 ---
 name: code-review
 description: Post-implementation code review. Adversarial. ASCII execution diagrams. Scales by diff size.

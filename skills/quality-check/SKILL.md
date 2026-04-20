@@ -1,4 +1,4 @@
-<!-- GENERATED FILE — DO NOT EDIT. Edit SKILL.templ.md instead. Run ./gen-skills.sh to regenerate. -->
+<!-- GENERATED FILE — DO NOT EDIT. Source: skills/quality-check/SKILL.templ.md. Run ./gen-skills.sh to regenerate. -->
 ---
 name: quality-check
 description: E2E QA testing using gstack-browse headless browser. Navigate, interact, verify app state, report bugs.
