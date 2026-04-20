@@ -38,7 +38,7 @@ User override always wins.
 
 {{PLAN_FINDING}}
 
-If PLAN is NONE: "No plan found for branch '{branch}'. Run /survey first."
+If PLAN is NONE: "No plan found for branch '{branch}'. Run /gauntlette-start (legacy aliases: /survey-and-plan, /help-me-plan) first."
 
 Read the full plan document.
 
@@ -46,7 +46,7 @@ Read the full plan document.
 
 Before hunting for bugs, understand the system.
 
-- Read CLAUDE.md, README, key config files
+- Read the repo instructions file (`CLAUDE.md`, `AGENTS.md`, or equivalent), README, and key config files
 - Map the application architecture: components, connections, trust boundaries
 - Identify data flow: where does user input enter? Where does it exit? What transformations happen?
 - Detect the tech stack (package.json, requirements.txt, go.mod, Gemfile, etc.)
@@ -220,7 +220,7 @@ For each CRITICAL or HIGH finding, present as a single AskUserQuestion:
 >
 > **Recommendation:** {specific fix}
 >
-> A) Fix it — add remediation to the plan before /implement
+> A) Fix it — add remediation to the plan before /gauntlette-implement
 > B) Accept risk — document why and proceed
 > C) Defer — add to plan as post-launch security hardening
 
@@ -248,7 +248,7 @@ For deferred items (option C):
 
 Write the edited plan back to the same location you read it from.
 
-"CSO review complete. Run /implement to start building."
+"CSO review complete. Run /gauntlette-implement to start building."
 
 ## Important Rules
 

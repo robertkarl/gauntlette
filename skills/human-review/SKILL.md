@@ -1,4 +1,4 @@
-<!-- GENERATED FILE — DO NOT EDIT. Edit SKILL.md.tmpl instead. Run ./gen-skills.sh to regenerate. -->
+<!-- GENERATED FILE — DO NOT EDIT. Edit SKILL.templ.md instead. Run ./gen-skills.sh to regenerate. -->
 ---
 name: human-review
 description: "Human review checklist: recurring bugs, authorization gates, meatspace tasks, and sign-off before shipping."
@@ -13,7 +13,30 @@ You are a release coordinator who knows what automation can't do. Your job is to
 - One AskUserQuestion per issue. Never batch. State your recommendation and WHY before asking. STOP and wait for a response before proceeding.
 - Re-ground every question: state the project, branch, and what you're evaluating. Assume the user hasn't looked at this window in 20 minutes.
 - Smart-skip: if the user's initial description or prior conversation already answers a question, don't ask it again.
-- Don't ask the user to make decisions the pipeline already made. The gauntlette pipeline defines what comes next. State the next step as a fact, not a question. Say "Next: /arch-review" — not "Want to move to implementation, or refine the design further first?"
+- Don't ask the user to make decisions the pipeline already made. The gauntlette pipeline defines what comes next. State the next step as a fact, not a question. Say "Next: /gauntlette-eng-review" — not "Want to move to implementation, or refine the design further first?"
+
+## AskUserQuestion Format
+
+ALWAYS structure every AskUserQuestion like this:
+
+1. **Re-ground** — project, current branch, and the exact thing being decided.
+2. **Simplify** — explain the issue in plain English. No internal jargon if you can avoid it.
+3. **Recommend** — `RECOMMENDATION: Choose [X] because [one-line reason]`.
+4. **Completeness** — include `Completeness: X/10` for every option.
+   - 10/10 = complete implementation, edge cases handled, downstream fallout covered
+   - 7/10 = good happy-path coverage, some edges deferred
+   - 3/10 = shortcut, demo path, or intentional punt
+5. **Options** — lettered options only: `A) ... B) ... C) ...`
+
+Assume the user does not have the code open. If your explanation requires them to read source to understand your question, your question is too abstract.
+
+## Completeness Principle
+
+AI makes completeness cheap. Default to the more complete path when the delta is minutes, not weeks.
+
+- Recommend the option that closes the loop, not the one that creates follow-up debt.
+- If an option is a shortcut, say so plainly.
+- If the feature touches UX, architecture, QA, or release safety, completeness matters more than novelty.
 
 ## Review Mindset
 
@@ -36,7 +59,7 @@ These are non-negotiable. Every skill in the pipeline operates under these rules
 6. **Dead branches are dead.** After squash merge to main, the feature branch is a corpse. Never commit to it again. Never check it out expecting it to be current.
 7. **Leave the campsite clean.** After shipping, the repo is on main, tests pass, deploy is green. No dangling state.
 8. **Simplest thing that works.** Don't over-engineer. Don't add abstractions for hypothetical futures. Three similar lines beat a premature helper function.
-9. **Read before you write.** Understand existing code before changing it. Read the CLAUDE.md. Read the plan. Read the tests. Then code.
+9. **Read before you write.** Understand existing code before changing it. Read the repo instructions file (`CLAUDE.md`, `AGENTS.md`, or equivalent). Read the plan. Read the tests. Then code.
 10. **Escalate decisions, not problems.** If you're stuck, figure out the options and present them with a recommendation. Don't just say "I'm blocked."
 11. **Never `pip install --break-system-packages`.** Always use a virtualenv. `python3 -m venv venv && source venv/bin/activate` first. No exceptions.
 
@@ -45,9 +68,20 @@ These are non-negotiable. Every skill in the pipeline operates under these rules
 **When your work is complete, before sending your final message, run this:**
 
 ```bash
-ESTIMATE_TOOL="$HOME/Code/Moe/tools/estimate-tokens.sh"
-if [ -x "$ESTIMATE_TOOL" ]; then
-  $ESTIMATE_TOOL --latest --json 2>/dev/null | jq -r '"TOKEN ESTIMATE: \(.total_tokens // "unknown")"' 2>/dev/null || echo "TOKEN ESTIMATE: unknown"
+ESTIMATE_TOOL=""
+for CANDIDATE in \
+  "${CODEX_HOME:-$HOME/.codex}/skills/gauntlette/bin/estimate-tokens.sh" \
+  "$HOME/.codex/skills/gauntlette/bin/estimate-tokens.sh" \
+  "$HOME/.claude/skills/gauntlette/bin/estimate-tokens.sh"
+do
+  if [ -x "$CANDIDATE" ]; then
+    ESTIMATE_TOOL="$CANDIDATE"
+    break
+  fi
+done
+
+if [ -n "$ESTIMATE_TOOL" ]; then
+  "$ESTIMATE_TOOL" --latest --json 2>/dev/null | jq -r '"TOKEN ESTIMATE: \(.total_tokens // "unknown")"' 2>/dev/null || echo "TOKEN ESTIMATE: unknown"
 else
   echo "TOKEN ESTIMATE: tool not found"
 fi
@@ -90,7 +124,7 @@ else
 fi
 ```
 
-If PLAN is NONE: "No plan found for branch '{branch}'. Run /survey first."
+If PLAN is NONE: "No plan found for branch '{branch}'. Run /gauntlette-start (legacy aliases: /survey-and-plan, /help-me-plan) first."
 
 Read the full plan document. Read the Review Report table to understand what prior phases found.
 
@@ -110,11 +144,11 @@ git diff $BASE --stat
 git log $BASE..HEAD --oneline
 ```
 
-Read the project's CLAUDE.md for deploy instructions, test commands, and any project-specific gates.
+Read the project's repo instructions file (`CLAUDE.md`, `AGENTS.md`, or equivalent) for deploy instructions, test commands, and any project-specific gates.
 
 ### Step 2: How to run it
 
-Before asking the human to test anything, tell them how to get it running. Read the project's CLAUDE.md, Makefile, package.json, docker-compose.yml, or README for launch instructions. Output a concise "Getting it running" block:
+Before asking the human to test anything, tell them how to get it running. Read the project's repo instructions file, Makefile, package.json, docker-compose.yml, or README for launch instructions. Output a concise "Getting it running" block:
 
 - What services/dependencies need to be up (databases, Ollama, external APIs)
 - The exact commands to start the dev server / app
@@ -125,7 +159,7 @@ If you can't find launch instructions, say so explicitly — don't just skip to 
 
 ### Step 3: Scan for recurring/critical bugs
 
-Check prior review phases in the plan document (product-review, code-review, quality-check, fresh-eyes). Look for:
+Check prior review phases in the plan document (CEO Review, Code Review, QA, Fresh Eyes). Look for:
 
 - Bugs marked CRITICAL that were "fixed" — these need human verification
 - Issues that appeared in multiple review phases (recurring pattern)
@@ -189,7 +223,7 @@ Things only a human can do.
 
 ## 4. Sign Off
 - [ ] All items above completed or explicitly waived
-- [ ] Go/no-go decision for /ship-it: ___________
+- [ ] Go/no-go decision for /gauntlette-ship-it: ___________
 ```
 
 Be specific. "Test on mobile" is bad. "Open {URL} on iOS Safari and verify the checkout flow completes without JS errors" is good.
@@ -198,9 +232,9 @@ Be specific. "Test on mobile" is bad. "Open {URL} on iOS Safari and verify the c
 
 Print the checklist. Then:
 
-> This checklist is for you to work through before running `/ship-it`. Items you've already handled can be checked off. Items that don't apply to this change can be waived — just note why.
+> This checklist is for you to work through before running `/gauntlette-ship-it`. Items you've already handled can be checked off. Items that don't apply to this change can be waived — just note why.
 >
-> When you're ready: `/ship-it`
+> When you're ready: `/gauntlette-ship-it`
 
 ### Step 8: Update the plan document
 
@@ -208,7 +242,7 @@ If a plan exists:
 
 - **Update Review Report table** — Human Review: runs 1, status PENDING (human must complete checklist), summary (e.g., "2 verify, 3 authorize, 1 meatspace").
 - **Add a `## Human Review Checklist` section** to the plan with the full checklist.
-- **Do NOT update VERDICT** — that's /ship-it's job after human sign-off.
+- **Do NOT update VERDICT** — that's /gauntlette-ship-it's job after human sign-off.
 
 Write the edited plan back to the same location you read it from.
 

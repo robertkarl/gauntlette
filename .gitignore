@@ -3,3 +3,4 @@
 *.swo
 *~
 # docs/plans/ is intentionally committed — do not ignore it
+.gstack/

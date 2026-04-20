@@ -32,7 +32,7 @@ echo "Current branch: $CURRENT_BRANCH"
 ```
 
 - If on `master` or `main`: **Good.** Proceed to plan lookup below.
-- If on a feature branch: **ABORT.** "You're on branch '$CURRENT_BRANCH' but /implement must start from main/master. Run `git checkout main` (or `git checkout master`) first, then re-run /implement." **Do not proceed.**
+- If on a feature branch: **ABORT.** "You're on branch '$CURRENT_BRANCH' but /gauntlette-implement must start from main/master. Run `git checkout main` (or `git checkout master`) first, then re-run /gauntlette-implement." **Do not proceed.**
 
 **Plan lookup (only reached from main/master):**
 
@@ -43,7 +43,7 @@ REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || ec
 ls "$HOME/.gauntlette/$REPO/" 2>/dev/null
 ```
 
-If one plan exists, use it. If multiple exist, ask which one. If none exist, stop: "No plan found. Run /survey first and provide a feature name."
+If one plan exists, use it. If multiple exist, ask which one. If none exist, stop: "No plan found. Run /gauntlette-start (legacy aliases: /survey-and-plan, /help-me-plan) and provide a feature name."
 
 Once a plan filename is known (e.g. `bugfixes.md`), derive the branch name from it (strip `.md`).
 
@@ -70,7 +70,7 @@ if [ -f "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md" ] && [ ! -f "docs/plans/$BRANC
 fi
 ```
 
-**Review check:** Read the plan's Review Report table. If Product Review and Architecture are both missing (Runs = 0 and Status is not SKIPPED), warn: "This plan has no product or architecture review. /implement will have less context. Run /product-review and /arch-review first?" Wait for user confirmation.
+**Review check:** Read the plan's Review Report table. If CEO Review and Engineering Review are both missing (Runs = 0 and Status is not SKIPPED), warn: "This plan has no CEO or engineering review. /gauntlette-implement will have less context. Run /gauntlette-ceo-review and /gauntlette-eng-review first?" Wait for user confirmation.
 
 Review check is not a gate — user can always proceed. Plan-not-found is a hard stop.
 
@@ -146,6 +146,6 @@ Run through this checklist silently:
 
 Write the edited plan to `docs/plans/$BRANCH_SAFE.md` (the in-repo location, which was set during promotion in Step 0). Do not write to scratch — it was deleted during promotion.
 
-"Implementation complete. Run /code-review to review the diff."
+"Implementation complete. Run /gauntlette-code-review to review the diff."
 
-**Next step in the gauntlette pipeline: `/code-review`**
+**Next step in the gauntlette pipeline: `/gauntlette-code-review`**

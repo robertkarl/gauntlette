@@ -1,12 +1,43 @@
 #!/bin/bash
 set -e
 
-SKILL_DIR="$HOME/.claude/skills"
-GAUNTLETTE_DIR="$SKILL_DIR/gauntlette"
 SOURCE_DIR="$(cd "$(dirname "$0")/skills" && pwd)"
+CLAUDE_SKILL_DIR="$HOME/.claude/skills"
+CODEX_SKILL_DIR="${CODEX_HOME:-$HOME/.codex}/skills"
 
-# Skills to install
-SKILLS=(gauntlette-help survey product-review ux-review arch-review fresh-eyes cso-review implement code-review quality-check human-review ship-it)
+SKILL_LINKS=(
+  "gauntlette-help:gauntlette-help"
+  "survey-and-plan:survey-and-plan"
+  "survey:survey-and-plan"
+  "help-me-plan:survey-and-plan"
+  "gauntlette-start:survey-and-plan"
+  "ceo-review:gauntlette-ceo-review"
+  "gauntlette-ceo-review:gauntlette-ceo-review"
+  "product-review:gauntlette-ceo-review"
+  "gauntlette-product-review:gauntlette-ceo-review"
+  "design-review:gauntlette-design-review"
+  "gauntlette-design-review:gauntlette-design-review"
+  "ux-review:gauntlette-design-review"
+  "gauntlette-ux-review:gauntlette-design-review"
+  "eng-review:gauntlette-eng-review"
+  "gauntlette-eng-review:gauntlette-eng-review"
+  "arch-review:gauntlette-eng-review"
+  "gauntlette-arch-review:gauntlette-eng-review"
+  "fresh-eyes:fresh-eyes"
+  "gauntlette-fresh-eyes:fresh-eyes"
+  "cso-review:cso-review"
+  "gauntlette-cso-review:cso-review"
+  "implement:implement"
+  "gauntlette-implement:implement"
+  "code-review:code-review"
+  "gauntlette-code-review:code-review"
+  "quality-check:quality-check"
+  "gauntlette-quality-check:quality-check"
+  "human-review:human-review"
+  "gauntlette-human-review:human-review"
+  "ship-it:ship-it"
+  "gauntlette-ship-it:ship-it"
+)
 
 # Check source exists
 if [ ! -d "$SOURCE_DIR" ]; then
@@ -22,41 +53,62 @@ if [ -f "$REPO_ROOT/gen-skills.sh" ]; then
   echo ""
 fi
 
-# Create target directory
-mkdir -p "$SKILL_DIR"
+link_skill_root() {
+  local skill_dir="$1"
+  local gauntlette_dir="$skill_dir/gauntlette"
 
-# Symlink the gauntlette directory itself
-if [ -L "$GAUNTLETTE_DIR" ]; then
-  echo "Updating existing symlink: $GAUNTLETTE_DIR"
-  rm "$GAUNTLETTE_DIR"
-elif [ -d "$GAUNTLETTE_DIR" ]; then
-  echo "ERROR: $GAUNTLETTE_DIR exists and is not a symlink. Remove it first."
-  exit 1
-fi
+  mkdir -p "$skill_dir"
 
-ln -s "$SOURCE_DIR" "$GAUNTLETTE_DIR"
-echo "Linked: $GAUNTLETTE_DIR -> $SOURCE_DIR"
-
-# Symlink each skill into ~/.claude/skills/
-for SKILL in "${SKILLS[@]}"; do
-  TARGET="$SKILL_DIR/$SKILL"
-
-  if [ -L "$TARGET" ]; then
-    EXISTING=$(readlink "$TARGET")
-    if [[ "$EXISTING" != gauntlette/* ]]; then
-      echo "SKIP: $SKILL -> $EXISTING (owned by another project, not overwriting)"
-      continue
-    fi
-    rm "$TARGET"
-  elif [ -d "$TARGET" ]; then
-    echo "SKIP: $SKILL is a directory (owned by another project, not overwriting)"
-    continue
+  if [ -L "$gauntlette_dir" ]; then
+    echo "Updating existing symlink: $gauntlette_dir"
+    rm "$gauntlette_dir"
+  elif [ -d "$gauntlette_dir" ]; then
+    echo "ERROR: $gauntlette_dir exists and is not a symlink. Remove it first."
+    exit 1
   fi
 
-  ln -s "gauntlette/$SKILL" "$TARGET"
-  echo "Linked: /$(basename "$SKILL")"
+  ln -s "$SOURCE_DIR" "$gauntlette_dir"
+  echo "Linked: $gauntlette_dir -> $SOURCE_DIR"
+}
+
+link_skill() {
+  local skill_dir="$1"
+  local target_name="$2"
+  local source_name="$3"
+  local target="$skill_dir/$target_name"
+
+  if [ -L "$target" ]; then
+    local existing
+    existing=$(readlink "$target")
+    if [[ "$existing" != gauntlette/* ]]; then
+      echo "SKIP: $target_name -> $existing (owned by another project, not overwriting)"
+      return
+    fi
+    rm "$target"
+  elif [ -d "$target" ]; then
+    echo "SKIP: $target_name is a directory (owned by another project, not overwriting)"
+    return
+  fi
+
+  ln -s "gauntlette/$source_name" "$target"
+  echo "Linked: /$target_name"
+}
+
+for SKILL_DIR in "$CLAUDE_SKILL_DIR" "$CODEX_SKILL_DIR"; do
+  link_skill_root "$SKILL_DIR"
+
+  for LINK in "${SKILL_LINKS[@]}"; do
+    TARGET_NAME="${LINK%%:*}"
+    SOURCE_NAME="${LINK##*:}"
+    link_skill "$SKILL_DIR" "$TARGET_NAME" "$SOURCE_NAME"
+  done
+
+  echo ""
 done
 
 echo ""
-echo "Installed ${#SKILLS[@]} skills. Conflicts (if any) listed above as SKIP."
-echo "Restart Claude Code to pick up new skills."
+echo "Installed gauntlette skills into:"
+echo "  - $CLAUDE_SKILL_DIR"
+echo "  - $CODEX_SKILL_DIR"
+echo "Conflicts (if any) listed above as SKIP."
+echo "Restart Claude Code or Codex to pick up new skills."

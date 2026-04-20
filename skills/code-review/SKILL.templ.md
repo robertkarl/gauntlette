@@ -122,4 +122,4 @@ If a plan exists:
 
 Write the edited plan back to wherever you found it (in-repo or scratch).
 
-"Code review complete. Run /quality-check for E2E browser testing, or ship it."
+"Code review complete. Run /gauntlette-quality-check for E2E browser testing, or ship it."

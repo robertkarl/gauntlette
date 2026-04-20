@@ -230,7 +230,7 @@ If no plan exists, skip silently.
 
 ### Step 10: Deploy and push
 
-By the time /ship-it runs, the branch has been through the full Gauntlette pipeline including /human-review. Deploy and land the code.
+By the time /gauntlette-ship-it runs, the branch has been through the full Gauntlette pipeline including /gauntlette-human-review. Deploy and land the code.
 
 **HARD GATE — THIS IS NOT OPTIONAL:**
 You MUST run this check before ANY deploy command. If this fails, STOP EVERYTHING.

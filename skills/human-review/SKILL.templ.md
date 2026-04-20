@@ -25,7 +25,7 @@ User override always wins.
 
 {{PLAN_FINDING}}
 
-If PLAN is NONE: "No plan found for branch '{branch}'. Run /survey first."
+If PLAN is NONE: "No plan found for branch '{branch}'. Run /gauntlette-start (legacy aliases: /survey-and-plan, /help-me-plan) first."
 
 Read the full plan document. Read the Review Report table to understand what prior phases found.
 
@@ -45,11 +45,11 @@ git diff $BASE --stat
 git log $BASE..HEAD --oneline
 ```
 
-Read the project's CLAUDE.md for deploy instructions, test commands, and any project-specific gates.
+Read the project's repo instructions file (`CLAUDE.md`, `AGENTS.md`, or equivalent) for deploy instructions, test commands, and any project-specific gates.
 
 ### Step 2: How to run it
 
-Before asking the human to test anything, tell them how to get it running. Read the project's CLAUDE.md, Makefile, package.json, docker-compose.yml, or README for launch instructions. Output a concise "Getting it running" block:
+Before asking the human to test anything, tell them how to get it running. Read the project's repo instructions file, Makefile, package.json, docker-compose.yml, or README for launch instructions. Output a concise "Getting it running" block:
 
 - What services/dependencies need to be up (databases, Ollama, external APIs)
 - The exact commands to start the dev server / app
@@ -60,7 +60,7 @@ If you can't find launch instructions, say so explicitly — don't just skip to 
 
 ### Step 3: Scan for recurring/critical bugs
 
-Check prior review phases in the plan document (product-review, code-review, quality-check, fresh-eyes). Look for:
+Check prior review phases in the plan document (CEO Review, Code Review, QA, Fresh Eyes). Look for:
 
 - Bugs marked CRITICAL that were "fixed" — these need human verification
 - Issues that appeared in multiple review phases (recurring pattern)
@@ -124,7 +124,7 @@ Things only a human can do.
 
 ## 4. Sign Off
 - [ ] All items above completed or explicitly waived
-- [ ] Go/no-go decision for /ship-it: ___________
+- [ ] Go/no-go decision for /gauntlette-ship-it: ___________
 ```
 
 Be specific. "Test on mobile" is bad. "Open {URL} on iOS Safari and verify the checkout flow completes without JS errors" is good.
@@ -133,9 +133,9 @@ Be specific. "Test on mobile" is bad. "Open {URL} on iOS Safari and verify the c
 
 Print the checklist. Then:
 
-> This checklist is for you to work through before running `/ship-it`. Items you've already handled can be checked off. Items that don't apply to this change can be waived — just note why.
+> This checklist is for you to work through before running `/gauntlette-ship-it`. Items you've already handled can be checked off. Items that don't apply to this change can be waived — just note why.
 >
-> When you're ready: `/ship-it`
+> When you're ready: `/gauntlette-ship-it`
 
 ### Step 8: Update the plan document
 
@@ -143,7 +143,7 @@ If a plan exists:
 
 - **Update Review Report table** — Human Review: runs 1, status PENDING (human must complete checklist), summary (e.g., "2 verify, 3 authorize, 1 meatspace").
 - **Add a `## Human Review Checklist` section** to the plan with the full checklist.
-- **Do NOT update VERDICT** — that's /ship-it's job after human sign-off.
+- **Do NOT update VERDICT** — that's /gauntlette-ship-it's job after human sign-off.
 
 Write the edited plan back to the same location you read it from.
 

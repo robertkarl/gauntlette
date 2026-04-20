@@ -1,4 +1,3 @@
-<!-- GENERATED FILE — DO NOT EDIT. Edit SKILL.templ.md instead. Run ./gen-skills.sh to regenerate. -->
 ---
 name: gauntlette-help
 description: "Show preferred gauntlette commands, pipeline order, and current plan status."
@@ -12,21 +11,7 @@ Show the user where they are in the gauntlette pipeline. No preamble.
 
 ### Step 1: Find the current plan
 
-```bash
-REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
-BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
-BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
-PLAN_INREPO="docs/plans/$BRANCH_SAFE.md"
-PLAN_SCRATCH="$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
-
-if [ -f "$PLAN_INREPO" ]; then
-  echo "PLAN: $PLAN_INREPO (promoted)"
-elif [ -f "$PLAN_SCRATCH" ]; then
-  echo "PLAN: $PLAN_SCRATCH (scratch)"
-else
-  echo "PLAN: NONE"
-fi
-```
+{{PLAN_FINDING}}
 
 ### Step 2: Determine current stage
 

@@ -1,68 +1,60 @@
 # Gauntlette
 
-Review pipeline for Claude Code. Every feature gets one plan document, refined through multiple personas until it's ready to ship.
+Gauntlette is the structured part of gstack without the ads, upgrade nagging, or lake chatter.
 
-This is heavily inspired by gstack.
+It is a review and delivery pipeline for Claude Code and Codex. Every feature gets:
 
-It's mostly a bunch of prompts and skill.md files, but also includes playwright for headless browser support. This dramatically improves the QA process and web fetch/search behavior.
+- a durable design doc in `~/.gauntlette/designs/{repo}/`
+- one active plan document that gets refined stage by stage
+- browser QA that acts like a real user
+- architecture diagrams that render well in markdown
 
-There is no telemetry, and it includes an uninstaller.
+There is no telemetry, no auto-update behavior, and no phone-home.
 
-## The Gauntlette
+## Preferred Commands
 
 ```
-/survey-and-plan → /product-review → /ux-review → /arch-review
-    → /fresh-eyes → [/cso-review] → /implement → /code-review → /quality-check → /human-review → /ship-it
+/gauntlette-start → /gauntlette-ceo-review → /gauntlette-design-review → /gauntlette-eng-review
+    → /gauntlette-fresh-eyes → [/gauntlette-cso-review] → /gauntlette-implement
+    → /gauntlette-code-review → /gauntlette-quality-check → /gauntlette-human-review → /gauntlette-ship-it
 ```
 
-`[brackets]` = optional step.
+Legacy aliases still work:
 
-Each skill reads the plan, does its job, and edits the plan with its findings. One document in, one document out — coherent, not a pile of opinions.
+- `/survey-and-plan`, `/survey`, and `/help-me-plan` all map to `/gauntlette-start`
+- `/ceo-review`, `/design-review`, and `/eng-review` are supported
+- older names like `/product-review`, `/ux-review`, and `/arch-review` still work
+- unprefixed stage names like `/quality-check` still work
+- `/gauntlette-help` shows the current stage and preferred command names
 
-## Skills
+## What Changed
 
-**Utility:**
-
-| Command | Does what |
-|---------|-----------|
-| `/gauntlette` | Shows the pipeline, available skills, and current plan status. |
-
-**Core loop** (use these on every feature):
-
-| Command | Persona | Does what |
-|---------|---------|-----------|
-| `/survey-and-plan` | Tech Lead + Design Partner | Conversational survey — orients on codebase, scopes feature with user, writes plan. |
-| `/implement` | Senior Engineer | Builds the feature against the reviewed plan. Tests alongside code. |
-| `/code-review` | Adversarial Reviewer | Post-implementation. Finds production bugs. Scales by diff size. |
-| `/ship-it` | Release Engineer | Merge, test, review, version bump, changelog, merge to master. |
-
-**Extended pipeline** (use when the feature warrants it):
-
-| Command | Persona | Does what | Auto-skips when |
-|---------|---------|-----------|-----------------|
-| `/product-review` | Skeptical PM/Founder | Challenges the idea itself. Scope, value, risk. | — |
-| `/ux-review` | Senior Designer | ASCII wireframes. Dimension ratings. AI slop audit. | No UI changes |
-| `/arch-review` | Staff Engineer | Architecture diagrams. Error paths. Failure modes. | Trivial change |
-| `/fresh-eyes` | Fresh-context adversary | Independent subagent review. No shared state. | < 50 lines changed |
-| `/cso-review` | Chief Security Officer | Security audit: secrets, supply chain, auth, injection, infra. | No security surface |
-| `/quality-check` | QA Engineer | E2E browser testing via playwright-cli. | No browser surface |
-| `/human-review` | Release Coordinator | Checklist of things only humans can do: verify fixes, authorize deploys, meatspace tasks. | — |
+- Planning is now closer to `gstack-office-hours`: one question at a time, sharper forcing questions, explicit premises, and alternatives generation.
+- The kickoff stage writes both a design doc and the active plan.
+- QA is now diff-aware and browser-first. It prefers an existing preview or browser session, falls back to local ports, writes evidence into `.gstack/qa-reports/`, and tracks a health score.
+- Architecture review now emits Mermaid plus ASCII diagrams.
+- The prompts now prefer complete options over shortcuts and use a stricter AskUserQuestion format.
+- Install now targets both `~/.claude/skills/` and `~/.codex/skills/`.
+- Token reporting is bundled under `gauntlette/bin/estimate-tokens.sh`, so it no longer depends on a separate Moe checkout.
 
 ## How It Works
 
-### One plan document per feature
+### Planning artifacts
 
-`/survey-and-plan` creates a plan at `~/.gauntlette/{repo}/{branch}.md`. Each subsequent skill reads the full plan, does its review, and edits the document — resolving decisions, adding sections, refining what's already there.
+`/gauntlette-start` writes:
 
-The plan lives **outside your repo** during review. Claude edits it aggressively through multiple passes. Bad edits during review don't touch your working tree.
+- `~/.gauntlette/designs/{repo}/{branch}-design-{timestamp}.md`
+- `~/.gauntlette/{repo}/{branch}.md`
+
+The design doc is the durable planning artifact. The plan is the stage-by-stage working document.
 
 ### Promotion
 
-When `/implement` starts, the plan is promoted: copied to `docs/plans/{branch}.md` inside your repo and the scratch copy is deleted. From that point, `/implement` and `/code-review` work against the in-repo plan. It can be committed alongside your code.
+When `/gauntlette-implement` starts, the plan is promoted into the repo at `docs/plans/{branch}.md` and the scratch copy is removed.
 
-### Review Report
+### Review report
 
-Every plan has a Review Report table at the bottom showing which skills have run, their status, and findings. This is the pipeline status tracker.
+Every plan ends with a **Gauntlette Review Report** table that tracks which stages ran, what they found, and what still needs to happen.
 
 ## Install
 
@@ -72,52 +64,50 @@ cd gauntlette
 ./install.sh
 ```
 
-This symlinks skills into `~/.claude/skills/`. Conflicts with existing installs (e.g. gstack) are skipped, not overwritten.
+`install.sh` regenerates the skill docs, then symlinks gauntlette into:
 
-For browser-based QA (`/quality-check`), also install:
+- `~/.claude/skills/`
+- `~/.codex/skills/`
 
-```bash
-npx playwright install
-```
+Conflicts with existing installs are skipped, not overwritten.
 
-Add to your project's CLAUDE.md:
+The shared `gauntlette/` root symlink also carries helper tools like `gauntlette/bin/estimate-tokens.sh`, so install and uninstall pick them up automatically.
+
+## QA Dependency
+
+`/gauntlette-quality-check` reuses the gstack browse binary if it exists at `~/.claude/skills/gstack/browse/dist/browse`.
+
+That gives gauntlette the same click-through web QA flow you liked from gstack, while still working well from Codex or Cursor when a built-in preview pane is already live.
+
+## Repo Instructions Snippet
+
+Add the command list to your repo instructions file, for example `CLAUDE.md` or `AGENTS.md`:
 
 ```markdown
 ## Gauntlette
-Available skills: /gauntlette, /survey-and-plan, /product-review, /ux-review, /arch-review, /fresh-eyes, /cso-review, /implement, /code-review, /quality-check, /human-review, /ship-it
+Preferred commands: /gauntlette-help, /gauntlette-start, /gauntlette-ceo-review, /gauntlette-design-review, /gauntlette-eng-review, /gauntlette-fresh-eyes, /gauntlette-cso-review, /gauntlette-implement, /gauntlette-code-review, /gauntlette-quality-check, /gauntlette-human-review, /gauntlette-ship-it
+Legacy aliases: /survey-and-plan, /survey, /help-me-plan, /ceo-review, /design-review, /eng-review, /product-review, /ux-review, /arch-review, /fresh-eyes, /cso-review, /implement, /code-review, /quality-check, /human-review, /ship-it
 ```
-
-## Dependencies
-
-| Dependency | Required by | Install |
-|-----------|-------------|---------|
-| Claude Code | all skills | `npm install -g @anthropic-ai/claude-code` |
-| Git | all skills | comes with your OS |
-| playwright-cli | `/quality-check` only | `npm install -g @playwright/cli` |
-
-No Bun. No compiled binaries. No config directories. Plan scratch files live in `~/.gauntlette/` during review.
 
 ## Principles
 
-- No telemetry. No analytics. No phone-home. Ever.
-- No upgrade checks. No version files. No config directories.
-- No "wow, great insight!" — personas are direct, blunt, and rude when warranted.
-- ASCII diagrams are mandatory for non-trivial flows.
-- Each skill is one self-contained SKILL.md.
-- One plan document per feature. Skills edit it, not append to it.
-- Plans live outside the repo during review, inside the repo after promotion. The motivation is to prevent bad edits during planning from messing with repo state.
+- No telemetry. No analytics. No phone-home.
+- No upgrade checks. No ads. No auto-update prompts.
+- One question at a time. Ask better questions, not more questions.
+- Prefer complete implementations over cute shortcuts.
+- Planning artifacts live outside the repo during review so bad edits do not dirty the worktree.
+- Mermaid plus ASCII diagrams are mandatory for non-trivial architecture.
+- QA should use the browser like a user, not excuse itself into unit-test theater.
 
 ## Engineering Axioms
 
-These rules govern how every skill in the pipeline operates. They're injected into all skills via the shared preamble.
-
-1. **Main is sacred.** Feature work happens on feature branches created from main. Ship-it squash merges back. Main is always deployable.
-2. **Tiny fixes go direct.** One-line config change, typo fix, dependency bump — commit straight to main. Don't create a branch for 30 seconds of work.
-3. **Test before fix.** When you hit a bug, write a failing test first. Then fix it. The test proves the bug existed and proves you fixed it. No exceptions.
-4. **Run the tests.** Before committing. Before merging. Before deploying. If they fail, stop.
-5. **One branch, one concern.** A feature branch does one thing. Don't mix a bug fix with a new feature. Don't clean up unrelated code while implementing something.
-6. **Dead branches are dead.** After squash merge to main, the feature branch is a corpse. Never commit to it again. Never check it out expecting it to be current.
-7. **Leave the campsite clean.** After shipping, the repo is on main, tests pass, deploy is green. No dangling state.
-8. **Simplest thing that works.** Don't over-engineer. Don't add abstractions for hypothetical futures. Three similar lines beat a premature helper function.
-9. **Read before you write.** Understand existing code before changing it. Read the CLAUDE.md. Read the plan. Read the tests. Then code.
-10. **Escalate decisions, not problems.** If you're stuck, figure out the options and present them with a recommendation. Don't just say "I'm blocked."
+1. Main is sacred.
+2. Tiny fixes go direct.
+3. Test before fix.
+4. Run the tests.
+5. One branch, one concern.
+6. Dead branches are dead.
+7. Leave the campsite clean.
+8. Simplest thing that works.
+9. Read the repo instructions file, the plan, and the tests before you write.
+10. Escalate decisions, not problems.

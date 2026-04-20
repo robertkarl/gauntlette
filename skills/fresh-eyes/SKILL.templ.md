@@ -37,7 +37,7 @@ User override always wins.
 
 {{PLAN_FINDING}}
 
-If PLAN is NONE: "No plan found for branch '{branch}'. Run /survey first."
+If PLAN is NONE: "No plan found for branch '{branch}'. Run /gauntlette-start (legacy aliases: /survey-and-plan, /help-me-plan) first."
 
 Read the full plan document.
 
@@ -127,6 +127,6 @@ For deferred findings: add a note to the Scope table as DEFERRED.
 
 Write the edited plan back to the same location you read it from.
 
-If reviewing a plan: "Fresh eyes complete. Run /implement to start building."
+If reviewing a plan: "Fresh eyes complete. Run /gauntlette-implement to start building."
 
-If reviewing a diff: "Fresh eyes complete. Run /code-review for structured review with execution diagrams."
+If reviewing a diff: "Fresh eyes complete. Run /gauntlette-code-review for structured review with execution diagrams."

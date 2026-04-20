@@ -83,7 +83,7 @@ Current offenders (sampled from SKILL.md files):
 |----------|--------|-----------|
 | What gets serialized | Questions only, not findings/analysis | User confirmed: the problem is batched questions, not batched output. Findings can be presented together. |
 | When to pause | Only when genuinely blocked | Over-correction (15+ round-trips) is worse than the current problem. Pause only when the skill literally cannot proceed without user input. Obvious defaults and rhetorical questions are stated inline. |
-| Implementation approach | Template system: SKILL.md.tmpl + build script generates SKILL.md | Learned from gstack: shared rules live in a preamble, injected at build time. Fixes the DRY problem for this rule AND the plan-finding snippet AND future shared rules. |
+| Implementation approach | Template system: SKILL.templ.md + build script generates SKILL.md | Learned from gstack: shared rules live in a preamble, injected at build time. Fixes the DRY problem for this rule AND the plan-finding snippet AND future shared rules. |
 | Canonical wording | Standardize on product-review's phrasing | Three skills already have the rule with slightly different wording. Pick one, use it everywhere. product-review's is the most complete. |
 | "Questions for the Human" template section | Remove from survey template | This section actively invites Claude to batch questions at the end of a wall of text. Replace with sequential AskUserQuestion calls. |
 | gauntlette-help | Exempt — no interaction | Display-only skill. No questions, no decisions. Adding the rule would be noise. |
@@ -93,10 +93,10 @@ Current offenders (sampled from SKILL.md files):
 
 | # | Item | Effort | Decision | Reasoning |
 |---|------|--------|----------|-----------|
-| 1 | Write `gen-skills.sh` build script — reads `.tmpl`, resolves `{{PREAMBLE}}` and `{{PLAN_FINDING}}`, writes `SKILL.md` | M | ACCEPTED | Single bash script, no dependencies. Resolves the DRY problem for all shared content. |
+| 1 | Write `gen-skills.sh` build script — reads `SKILL.templ.md`, resolves `{{PREAMBLE}}` and `{{PLAN_FINDING}}`, writes `SKILL.md` | M | ACCEPTED | Single bash script, no dependencies. Resolves the DRY problem for all shared content. |
 | 2 | Write `preamble.md` — shared rules injected into every interactive skill | S | ACCEPTED | Contains: one-at-a-time rule, don't-ask-what-pipeline-decides rule, re-ground rule, smart-skip rule. |
 | 3 | Write `plan-finding.md` — shared plan-finding bash snippet | S | ACCEPTED | The canonical snippet that was copy-pasted 10 times. Now lives in one file. |
-| 4 | Convert all 10 SKILL.md to SKILL.md.tmpl + generated SKILL.md | M | ACCEPTED | Each skill gets a .tmpl with `{{PREAMBLE}}` and `{{PLAN_FINDING}}` placeholders. The generated SKILL.md is what Claude Code reads. |
+| 4 | Convert all 10 SKILL.md to SKILL.templ.md + generated SKILL.md | M | ACCEPTED | Each skill gets a markdown-friendly template file with `{{PREAMBLE}}` and `{{PLAN_FINDING}}` placeholders. The generated SKILL.md is what Claude Code reads. |
 | 5 | Audit and rewrite multi-question anti-patterns in templates | M | ACCEPTED | "Questions for the Human" in survey, inconsistent AskUserQuestion usage, unsolicited next-step questions. Fix in the templates. |
 | 6 | Update install.sh to run gen-skills.sh | S | ACCEPTED | Generated SKILL.md files need to exist after install. |
 
@@ -226,17 +226,17 @@ No automated tests possible — manual run of pipeline is the test.
 | `shared/preamble.md` | Shared interaction rules injected via `{{PREAMBLE}}` |
 | `shared/plan-finding.md` | Canonical plan-finding bash snippet injected via `{{PLAN_FINDING}}` |
 | `gen-skills.sh` | Build script: resolves templates → SKILL.md |
-| `skills/*/SKILL.md.tmpl` | Templates (10 files, one per skill) |
+| `skills/*/SKILL.templ.md` | Templates (10 files, one per skill) |
 
 ### Files that become generated (do not edit directly)
 
-All `skills/*/SKILL.md` — generated from `.tmpl` by `gen-skills.sh`.
+All `skills/*/SKILL.md` — generated from `SKILL.templ.md` by `gen-skills.sh`.
 
 ### Implementation order
 
 1. Write `shared/preamble.md` and `shared/plan-finding.md`
 2. Write `gen-skills.sh`
-3. Convert each skill: rename SKILL.md → SKILL.md.tmpl, insert `{{PREAMBLE}}` and `{{PLAN_FINDING}}`, apply anti-pattern fixes
+3. Convert each skill: rename SKILL.md → SKILL.templ.md, insert `{{PREAMBLE}}` and `{{PLAN_FINDING}}`, apply anti-pattern fixes
 4. Run `gen-skills.sh` to generate all SKILL.md files
 5. Verify generated output matches expected content
 6. Update install.sh
@@ -250,7 +250,7 @@ All `skills/*/SKILL.md` — generated from `.tmpl` by `gen-skills.sh`.
 | UX Review | `/ux-review` | 0 | — | — |
 | Architecture | `/arch-review` | 1 | CLEAR | 9 files, 0 new. Canonical block for 9 skills. Survey template anti-pattern removal. No issues found. |
 | Fresh Eyes | `/fresh-eyes` | 0 | — | — |
-| Implementation | `/implement` | 1 | DONE | Template system: gen-skills.sh + shared/ + 10 .tmpl files. Preamble injected into 9 skills. |
+| Implementation | `/implement` | 1 | DONE | Template system: gen-skills.sh + shared/ + 10 `SKILL.templ.md` files. Preamble injected into 9 skills. |
 | Code Review | `/code-review` | 1 | PASS | 12 adversarial findings. Fixed 5: preamble example, generated-file header, placeholder validation, survey orientation restore, survey flow contradiction. Skipped 7 (pre-existing, out of scope, or not bugs). |
 | QA | `/quality-check` | 0 | SKIPPED (no browser surface) | Pure prompt engineering — SKILL.md templates, bash scripts, shared markdown. No UI to test. |
 | Ship | `/ship-it` | 1 | DONE | Shipped v0.1.3.0 on 2026-03-28. |

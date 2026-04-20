@@ -13,9 +13,9 @@ GENERATED=0
 SKIPPED=0
 ERRORS=0
 
-HEADER="<!-- GENERATED FILE — DO NOT EDIT. Edit SKILL.md.tmpl instead. Run ./gen-skills.sh to regenerate. -->"
+HEADER="<!-- GENERATED FILE — DO NOT EDIT. Edit SKILL.templ.md instead. Run ./gen-skills.sh to regenerate. -->"
 
-for TMPL in "$SKILLS_DIR"/*/SKILL.md.tmpl; do
+for TMPL in "$SKILLS_DIR"/*/SKILL.templ.md; do
   [ -f "$TMPL" ] || continue
   SKILL_DIR=$(dirname "$TMPL")
   SKILL_NAME=$(basename "$SKILL_DIR")
@@ -29,7 +29,7 @@ for TMPL in "$SKILLS_DIR"/*/SKILL.md.tmpl; do
   # Check for unresolved placeholders
   if echo "$CONTENT" | grep -qE '\{\{[A-Z_]+\}\}'; then
     UNRESOLVED=$(echo "$CONTENT" | grep -oE '\{\{[A-Z_]+\}\}' | sort -u | tr '\n' ' ')
-    echo "ERROR: $SKILL_NAME/SKILL.md.tmpl has unresolved placeholders: $UNRESOLVED"
+    echo "ERROR: $SKILL_NAME/SKILL.templ.md has unresolved placeholders: $UNRESOLVED"
     ERRORS=$((ERRORS + 1))
     continue
   fi
@@ -43,7 +43,7 @@ done
 # Warn about skills with no template
 for SKILL_DIR in "$SKILLS_DIR"/*/; do
   SKILL_NAME=$(basename "$SKILL_DIR")
-  if [ ! -f "$SKILL_DIR/SKILL.md.tmpl" ] && [ -f "$SKILL_DIR/SKILL.md" ]; then
+  if [ ! -f "$SKILL_DIR/SKILL.templ.md" ] && [ -f "$SKILL_DIR/SKILL.md" ]; then
     SKIPPED=$((SKIPPED + 1))
     echo "No template: $SKILL_NAME/SKILL.md (hand-maintained)"
   fi
