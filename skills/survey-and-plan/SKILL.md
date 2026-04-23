@@ -97,7 +97,9 @@ Include the output in your final message, formatted as:
 /STAGE_NAME TOKEN ESTIMATE: <number>
 ```
 
-For example: `/SURVEY TOKEN ESTIMATE: 15000`
+Use the canonical `/gauntlette-*` command name for `STAGE_NAME`, not a legacy alias.
+
+For example: `/gauntlette-start TOKEN ESTIMATE: 15000`
 
 This helps track which pipeline stages are expensive. Order of magnitude accuracy is fine.
 
@@ -548,4 +550,15 @@ mkdir -p "$HOME/.gauntlette/designs/$REPO"
 
 Write the plan to `~/.gauntlette/{repo}/{branch}.md` and the design doc to `~/.gauntlette/designs/{repo}/`.
 
-Tell the user where both files were written. State: "Next: /gauntlette-ceo-review (legacy aliases: /ceo-review, /product-review)."
+Tell the user where both files were written using this handoff format:
+
+```text
+/gauntlette-start TOKEN ESTIMATE: {number}
+
+- The design doc (this has problem statement; motivations; goals; constraints; approaches considered): {absolute path to the design doc}
+- Active plan (implementation plan, next steps, gauntlette review status): {absolute path to the plan}
+
+Next steps: /clear and /gauntlette-ceo-review
+```
+
+Use the canonical `/gauntlette-*` command names in this handoff block, not legacy aliases.

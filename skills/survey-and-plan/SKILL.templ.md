@@ -463,4 +463,15 @@ mkdir -p "$HOME/.gauntlette/designs/$REPO"
 
 Write the plan to `~/.gauntlette/{repo}/{branch}.md` and the design doc to `~/.gauntlette/designs/{repo}/`.
 
-Tell the user where both files were written. State: "Next: /gauntlette-ceo-review (legacy aliases: /ceo-review, /product-review)."
+Tell the user where both files were written using this handoff format:
+
+```text
+/gauntlette-start TOKEN ESTIMATE: {number}
+
+- The design doc (this has problem statement; motivations; goals; constraints; approaches considered): {absolute path to the design doc}
+- Active plan (implementation plan, next steps, gauntlette review status): {absolute path to the plan}
+
+Next steps: /clear and /gauntlette-ceo-review
+```
+
+Use the canonical `/gauntlette-*` command names in this handoff block, not legacy aliases.

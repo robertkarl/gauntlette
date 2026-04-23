@@ -80,6 +80,8 @@ Include the output in your final message, formatted as:
 /STAGE_NAME TOKEN ESTIMATE: <number>
 ```
 
-For example: `/SURVEY TOKEN ESTIMATE: 15000`
+Use the canonical `/gauntlette-*` command name for `STAGE_NAME`, not a legacy alias.
+
+For example: `/gauntlette-start TOKEN ESTIMATE: 15000`
 
 This helps track which pipeline stages are expensive. Order of magnitude accuracy is fine.
