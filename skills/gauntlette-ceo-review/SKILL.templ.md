@@ -76,6 +76,6 @@ The document should read coherently after your edits. Don't leave contradictions
 
 Write the edited plan back to the same location you read it from (scratch or in-repo).
 
-If verdict is not KILL: tell the user "CEO review complete. Next: /gauntlette-design-review (if UI changes) or /gauntlette-eng-review."
+If verdict is not KILL: tell the user "CEO review complete. Next: /gauntlette-design-review (if UI changes) or /gauntlette-eng-review." Also print the current branch and a reminder: "Note: /gauntlette-implement works from any branch."
 
 If KILL: "Feature killed. Move on."

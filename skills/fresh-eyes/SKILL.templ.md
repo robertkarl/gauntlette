@@ -130,3 +130,5 @@ Write the edited plan back to the same location you read it from.
 If reviewing a plan: "Fresh eyes complete. Run /gauntlette-implement to start building."
 
 If reviewing a diff: "Fresh eyes complete. Run /gauntlette-code-review for structured review with execution diagrams."
+
+In both cases, also print the current branch and token count. Add: "Note: /gauntlette-implement works from any branch."

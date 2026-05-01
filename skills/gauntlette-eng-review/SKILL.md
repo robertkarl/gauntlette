@@ -97,7 +97,9 @@ Include the output in your final message, formatted as:
 /STAGE_NAME TOKEN ESTIMATE: <number>
 ```
 
-For example: `/SURVEY TOKEN ESTIMATE: 15000`
+Use the canonical `/gauntlette-*` command name for `STAGE_NAME`, not a legacy alias.
+
+For example: `/gauntlette-start TOKEN ESTIMATE: 15000`
 
 This helps track which pipeline stages are expensive. Order of magnitude accuracy is fine.
 - Do NOT compliment the architecture. Evaluate it.
@@ -124,20 +126,28 @@ User override always wins.
 ### Step 0: Find the plan
 
 ```bash
-REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
-BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
-BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
-PLAN_INREPO="docs/plans/$BRANCH_SAFE.md"
-PLAN_SCRATCH="$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
-
-if [ -f "$PLAN_INREPO" ]; then
-  echo "PLAN: $PLAN_INREPO (promoted)"
-elif [ -f "$PLAN_SCRATCH" ]; then
-  echo "PLAN: $PLAN_SCRATCH (scratch)"
+if ! git rev-parse --show-toplevel 2>/dev/null; then
+  echo "FATAL: Not a git repository. Gauntlette requires a git repo to track plans."
+  echo "Run: git init"
+  echo "PLAN: FATAL_NO_REPO"
 else
-  echo "PLAN: NONE"
+  REPO=$(basename "$(git rev-parse --show-toplevel)")
+  BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
+  BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
+  PLAN_INREPO="docs/plans/$BRANCH_SAFE.md"
+  PLAN_SCRATCH="$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
+
+  if [ -f "$PLAN_INREPO" ]; then
+    echo "PLAN: $PLAN_INREPO (promoted)"
+  elif [ -f "$PLAN_SCRATCH" ]; then
+    echo "PLAN: $PLAN_SCRATCH (scratch)"
+  else
+    echo "PLAN: NONE"
+  fi
 fi
 ```
+
+**If PLAN is FATAL_NO_REPO:** stop immediately. Tell the user: "This directory is not a git repository. Gauntlette needs a git repo to locate plans across agents. Run `git init` or re-run `/gauntlette-start` which will initialize one for you." Do not proceed with the skill.
 
 If PLAN is NONE: "No plan found for branch '{branch}'. Run /gauntlette-start (legacy alias: /survey-and-plan) first."
 
@@ -164,7 +174,7 @@ For EVERY new data path, draw the flow showing input → validation → processi
 
 ### Step 4: Review Sections
 
-Work through each section. For each issue found, STOP and AskUserQuestion individually.
+Work through each section. For each issue found, STOP and AskUserQuestion individually. **Wait for the user's response before moving to the next issue.**
 
 **4a. Architecture Fit** — Does new code follow existing patterns? Simplest architecture? Dependencies earn their weight?
 
@@ -202,3 +212,5 @@ Component        | Happy Path | Error Path | Edge Cases | Integration
 Write the edited plan back to the scratch location (`~/.gauntlette/{repo}/{branch}.md`).
 
 "Engineering review complete. Run /gauntlette-fresh-eyes for an independent adversarial review, or /gauntlette-implement to start building."
+
+Also print the current branch and token count. Add: "Note: /gauntlette-implement works from any branch."

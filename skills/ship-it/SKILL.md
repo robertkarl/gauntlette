@@ -96,7 +96,9 @@ Include the output in your final message, formatted as:
 /STAGE_NAME TOKEN ESTIMATE: <number>
 ```
 
-For example: `/SURVEY TOKEN ESTIMATE: 15000`
+Use the canonical `/gauntlette-*` command name for `STAGE_NAME`, not a legacy alias.
+
+For example: `/gauntlette-start TOKEN ESTIMATE: 15000`
 
 This helps track which pipeline stages are expensive. Order of magnitude accuracy is fine.
 
@@ -105,20 +107,28 @@ This helps track which pipeline stages are expensive. Order of magnitude accurac
 ### Step 0: Pre-flight
 
 ```bash
-REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
-BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
-BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
-PLAN_INREPO="docs/plans/$BRANCH_SAFE.md"
-PLAN_SCRATCH="$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
-
-if [ -f "$PLAN_INREPO" ]; then
-  echo "PLAN: $PLAN_INREPO (promoted)"
-elif [ -f "$PLAN_SCRATCH" ]; then
-  echo "PLAN: $PLAN_SCRATCH (scratch)"
+if ! git rev-parse --show-toplevel 2>/dev/null; then
+  echo "FATAL: Not a git repository. Gauntlette requires a git repo to track plans."
+  echo "Run: git init"
+  echo "PLAN: FATAL_NO_REPO"
 else
-  echo "PLAN: NONE"
+  REPO=$(basename "$(git rev-parse --show-toplevel)")
+  BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
+  BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
+  PLAN_INREPO="docs/plans/$BRANCH_SAFE.md"
+  PLAN_SCRATCH="$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md"
+
+  if [ -f "$PLAN_INREPO" ]; then
+    echo "PLAN: $PLAN_INREPO (promoted)"
+  elif [ -f "$PLAN_SCRATCH" ]; then
+    echo "PLAN: $PLAN_SCRATCH (scratch)"
+  else
+    echo "PLAN: NONE"
+  fi
 fi
 ```
+
+**If PLAN is FATAL_NO_REPO:** stop immediately. Tell the user: "This directory is not a git repository. Gauntlette needs a git repo to locate plans across agents. Run `git init` or re-run `/gauntlette-start` which will initialize one for you." Do not proceed with the skill.
 
 ```bash
 REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
@@ -214,7 +224,7 @@ If A: write the tests, run them, commit them. Return to Step 2 to re-run the ful
 
 ### Step 4: Pre-landing review
 
-Review the diff for structural issues that tests don't catch. Work through each category. Fix obvious issues directly. Flag ambiguous ones via AskUserQuestion.
+Review the diff for structural issues that tests don't catch. Work through each category. Fix obvious issues directly. Flag ambiguous ones via AskUserQuestion — one at a time. **STOP and wait** for the user's response before moving to the next issue.
 
 **4a. Logic Errors** — impossible conditions, off-by-one, null access, type coercion.
 

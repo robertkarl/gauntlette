@@ -22,8 +22,19 @@ Be direct, concrete, and useful. Challenge bad assumptions. Push for specifics. 
 
 ### Step 0: Find or create the planning artifacts
 
+If the current directory is not inside a git repository (`git rev-parse --show-toplevel` fails), initialize one:
+
 ```bash
-REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
+if ! git rev-parse --show-toplevel 2>/dev/null; then
+  git init
+  echo "Initialized new git repo in $(pwd)"
+fi
+```
+
+Then resolve repo and branch:
+
+```bash
+REPO=$(basename "$(git rev-parse --show-toplevel)")
 BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
 BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
 PLAN_INREPO="docs/plans/$BRANCH_SAFE.md"
@@ -106,7 +117,7 @@ Before asking questions, use Grep/Glob to map the codebase areas most relevant t
 
 #### Product mode questions
 
-Ask these one at a time. Smart-skip anything the user already clearly answered.
+Ask these one at a time. Smart-skip anything the user already clearly answered. **STOP and wait** for the user's response before asking the next question.
 
 **Q1: Demand reality**
 "What's the strongest evidence that this matters right now? Not curiosity. Not polite interest. What breaks, costs money, or burns hours if this stays bad?"
@@ -140,7 +151,7 @@ This prevents the plan from becoming a junk drawer.
 
 #### Builder mode questions
 
-Ask these one at a time. The goal is to sharpen taste and scope, not run a startup interrogation.
+Ask these one at a time. **STOP and wait** for the user's response before asking the next question. The goal is to sharpen taste and scope, not run a startup interrogation.
 
 **Q1: What's the coolest version of this?**
 "What would make this feel specific, not generic?"
@@ -454,7 +465,7 @@ Checkpoints:
 ### Step 9: Write to disk
 
 ```bash
-REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)")
+REPO=$(basename "$(git rev-parse --show-toplevel)")
 BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
 BRANCH_SAFE=$(echo "$BRANCH" | tr '/' '-')
 mkdir -p "$HOME/.gauntlette/$REPO"
@@ -470,8 +481,10 @@ Tell the user where both files were written using this handoff format:
 
 - The design doc (this has problem statement; motivations; goals; constraints; approaches considered): {absolute path to the design doc}
 - Active plan (implementation plan, next steps, gauntlette review status): {absolute path to the plan}
+- Current branch: {CURRENT_BRANCH}
 
 Next steps: /clear and /gauntlette-ceo-review
+Note: /gauntlette-implement works from any branch. If you're on a feature branch, it will look for a matching plan or let you pick one.
 ```
 
 Use the canonical `/gauntlette-*` command names in this handoff block, not legacy aliases.

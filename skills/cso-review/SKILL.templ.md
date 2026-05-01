@@ -250,6 +250,8 @@ Write the edited plan back to the same location you read it from.
 
 "CSO review complete. Run /gauntlette-implement to start building."
 
+Also print the current branch and token count. Add: "Note: /gauntlette-implement works from any branch."
+
 ## Important Rules
 
 - **Think like an attacker, report like a defender.** Show the exploit path, then the fix.

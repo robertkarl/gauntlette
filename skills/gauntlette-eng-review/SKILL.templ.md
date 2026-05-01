@@ -65,7 +65,7 @@ For EVERY new data path, draw the flow showing input → validation → processi
 
 ### Step 4: Review Sections
 
-Work through each section. For each issue found, STOP and AskUserQuestion individually.
+Work through each section. For each issue found, STOP and AskUserQuestion individually. **Wait for the user's response before moving to the next issue.**
 
 **4a. Architecture Fit** — Does new code follow existing patterns? Simplest architecture? Dependencies earn their weight?
 
@@ -103,3 +103,5 @@ Component        | Happy Path | Error Path | Edge Cases | Integration
 Write the edited plan back to the scratch location (`~/.gauntlette/{repo}/{branch}.md`).
 
 "Engineering review complete. Run /gauntlette-fresh-eyes for an independent adversarial review, or /gauntlette-implement to start building."
+
+Also print the current branch and token count. Add: "Note: /gauntlette-implement works from any branch."

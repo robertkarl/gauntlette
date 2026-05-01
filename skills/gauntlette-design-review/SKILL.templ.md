@@ -74,3 +74,5 @@ Draw the state machine for user flow through this feature.
 Write the edited plan back to the same location you read it from.
 
 "Design review complete. Run /gauntlette-eng-review to lock in the technical architecture."
+
+Also print the current branch and token count. Add: "Note: /gauntlette-implement works from any branch."

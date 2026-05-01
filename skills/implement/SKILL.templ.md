@@ -28,13 +28,26 @@ You are a senior engineer who has been handed a reviewed, approved plan and told
 
 ```bash
 CURRENT_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
+REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
 echo "Current branch: $CURRENT_BRANCH"
+echo "Repo: $REPO"
+
+# Check if already on a feature branch that matches a plan
+BRANCH_SAFE=$(echo "$CURRENT_BRANCH" | tr '/' '-')
+if [ "$CURRENT_BRANCH" != "master" ] && [ "$CURRENT_BRANCH" != "main" ]; then
+  if [ -f "$HOME/.gauntlette/$REPO/$BRANCH_SAFE.md" ] || [ -f "docs/plans/$BRANCH_SAFE.md" ]; then
+    echo "BRANCH_HAS_PLAN: yes — $CURRENT_BRANCH matches an existing plan"
+  else
+    echo "BRANCH_HAS_PLAN: no"
+  fi
+fi
 ```
 
-- If on `master` or `main`: **Good.** Proceed to plan lookup below.
-- If on a feature branch: **ABORT.** "You're on branch '$CURRENT_BRANCH' but /gauntlette-implement must start from main/master. Run `git checkout main` (or `git checkout master`) first, then re-run /gauntlette-implement." **Do not proceed.**
+- If on a feature branch **that matches an existing plan** (BRANCH_HAS_PLAN = yes): **Good.** Skip plan lookup and branch creation — use this branch and its matching plan directly. Set `BRANCH_SAFE` from the current branch name and proceed to **Promote plan** below.
+- If on a feature branch **with no matching plan**: Proceed to plan lookup below. You will use the current branch (do NOT switch to main/master or create a new branch).
+- If on `master` or `main`: Proceed to plan lookup below.
 
-**Plan lookup (only reached from main/master):**
+**Plan lookup:**
 
 List available scratch plans:
 
@@ -47,14 +60,18 @@ If one plan exists, use it. If multiple exist, ask which one. If none exist, sto
 
 Once a plan filename is known (e.g. `bugfixes.md`), derive the branch name from it (strip `.md`).
 
-**Create the feature branch from main/master:**
+**Create or switch to the feature branch (only when on main/master):**
+
+If already on a feature branch, stay on it — do NOT switch branches. Only create/switch when on main/master:
 
 ```bash
-git checkout main 2>/dev/null || git checkout master
-git checkout -b {name} 2>/dev/null || git checkout {name}
+CURRENT_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
+if [ "$CURRENT_BRANCH" = "master" ] || [ "$CURRENT_BRANCH" = "main" ]; then
+  git checkout -b {name} 2>/dev/null || git checkout {name}
+fi
 ```
 
-Then set `BRANCH_SAFE` to the derived name.
+Then set `BRANCH_SAFE` to the derived name (or the current branch name if you stayed).
 
 **Promote plan:** If the plan is in scratch (`~/.gauntlette/{repo}/{branch}.md`) and not yet in-repo, promote it now:
 

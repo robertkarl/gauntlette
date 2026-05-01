@@ -61,7 +61,7 @@ For EACH changed file with logic (not config, not styles), draw an ASCII diagram
 
 ### Step 3: Structured review
 
-Work through each category. FIXABLE issues: fix immediately. INVESTIGATE issues: present via AskUserQuestion.
+Work through each category. FIXABLE issues: fix immediately. INVESTIGATE issues: present via AskUserQuestion. **STOP and wait** for the user's response before moving to the next issue.
 
 **3a. Logic Errors** — impossible conditions, off-by-one, null access, type coercion, comparison errors.
 

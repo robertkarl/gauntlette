@@ -115,7 +115,7 @@ If A: write the tests, run them, commit them. Return to Step 2 to re-run the ful
 
 ### Step 4: Pre-landing review
 
-Review the diff for structural issues that tests don't catch. Work through each category. Fix obvious issues directly. Flag ambiguous ones via AskUserQuestion.
+Review the diff for structural issues that tests don't catch. Work through each category. Fix obvious issues directly. Flag ambiguous ones via AskUserQuestion — one at a time. **STOP and wait** for the user's response before moving to the next issue.
 
 **4a. Logic Errors** — impossible conditions, off-by-one, null access, type coercion.
 
