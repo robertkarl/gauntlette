@@ -33,8 +33,33 @@ for TMPL in "$SKILLS_DIR"/*/SKILL.templ.md; do
     continue
   fi
 
-  # Write generated file with header
-  { echo "$HEADER"; printf '%s\n' "$CONTENT"; } > "$OUTPUT"
+  if [[ "$CONTENT" != ---$'\n'* ]]; then
+    echo "ERROR: $SKILL_NAME/SKILL.templ.md must start with YAML frontmatter."
+    ERRORS=$((ERRORS + 1))
+    continue
+  fi
+
+  # Write generated file with the notice after YAML frontmatter. Codex requires
+  # SKILL.md to begin with the opening frontmatter delimiter.
+  if ! printf '%s\n' "$CONTENT" | awk -v header="$HEADER" '
+    BEGIN { markers = 0; inserted = 0 }
+    {
+      print
+      if ($0 == "---") {
+        markers++
+        if (markers == 2 && !inserted) {
+          print ""
+          print header
+          inserted = 1
+        }
+      }
+    }
+    END { if (!inserted) exit 2 }
+  ' > "$OUTPUT"; then
+    echo "ERROR: $SKILL_NAME/SKILL.templ.md is missing closing YAML frontmatter delimiter."
+    ERRORS=$((ERRORS + 1))
+    continue
+  fi
   GENERATED=$((GENERATED + 1))
   echo "Generated: $SKILL_NAME/SKILL.md"
 done

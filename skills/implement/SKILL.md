@@ -1,8 +1,9 @@
-<!-- GENERATED FILE — DO NOT EDIT. Source: skills/implement/SKILL.templ.md. Run ./gen-skills.sh to regenerate. -->
 ---
 name: implement
 description: Build the feature. Reads the plan document as its spec. Tests alongside code. Atomic commits.
 ---
+
+<!-- GENERATED FILE — DO NOT EDIT. Source: skills/implement/SKILL.templ.md. Run ./gen-skills.sh to regenerate. -->
 
 # /implement — Implement
 

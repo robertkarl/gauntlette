@@ -1,4 +1,3 @@
-<!-- GENERATED FILE — DO NOT EDIT. Source: skills/survey-and-plan/SKILL.templ.md. Run ./gen-skills.sh to regenerate. -->
 ---
 name: survey-and-plan
 description: |
@@ -7,6 +6,8 @@ description: |
   one-question-at-a-time planning interview, saves a durable design doc in
   ~/.gauntlette/designs/{repo}/, and writes the active plan document.
 ---
+
+<!-- GENERATED FILE — DO NOT EDIT. Source: skills/survey-and-plan/SKILL.templ.md. Run ./gen-skills.sh to regenerate. -->
 
 # /gauntlette-start (aliases: /survey-and-plan, /help-me-plan) — Planning Kickoff
 

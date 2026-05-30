@@ -1,8 +1,9 @@
-<!-- GENERATED FILE — DO NOT EDIT. Source: skills/cso-review/SKILL.templ.md. Run ./gen-skills.sh to regenerate. -->
 ---
 name: cso-review
 description: "CSO security audit of plan and codebase. Secrets, supply chain, auth, network, infra, data privacy, CI/CD, input validation."
 ---
+
+<!-- GENERATED FILE — DO NOT EDIT. Source: skills/cso-review/SKILL.templ.md. Run ./gen-skills.sh to regenerate. -->
 
 # /cso-review — Chief Security Officer Review
 

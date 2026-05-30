@@ -5,6 +5,7 @@ SOURCE_DIR="$(cd "$(dirname "$0")/skills" && pwd)"
 CLAUDE_SKILL_DIR="$HOME/.claude/skills"
 CODEX_SKILL_DIR="${CODEX_HOME:-$HOME/.codex}/skills"
 
+# TODO: these should be named the proper thing on disk. having this indirection makes no sense.
 SKILL_LINKS=(
   "gauntlette-help:gauntlette-help"
   "gauntlette-start:survey-and-plan"

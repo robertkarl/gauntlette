@@ -1,8 +1,9 @@
-<!-- GENERATED FILE — DO NOT EDIT. Source: skills/fresh-eyes/SKILL.templ.md. Run ./gen-skills.sh to regenerate. -->
 ---
 name: fresh-eyes
 description: Independent adversarial review from a fresh-context subagent. No shared state with prior reviews.
 ---
+
+<!-- GENERATED FILE — DO NOT EDIT. Source: skills/fresh-eyes/SKILL.templ.md. Run ./gen-skills.sh to regenerate. -->
 
 # /fresh-eyes — Fresh Eyes Review
 

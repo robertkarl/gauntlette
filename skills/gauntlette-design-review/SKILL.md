@@ -1,8 +1,9 @@
-<!-- GENERATED FILE — DO NOT EDIT. Source: skills/gauntlette-design-review/SKILL.templ.md. Run ./gen-skills.sh to regenerate. -->
 ---
 name: gauntlette-design-review
 description: Design review with ASCII wireframes. Rates design dimensions. Catches AI slop.
 ---
+
+<!-- GENERATED FILE — DO NOT EDIT. Source: skills/gauntlette-design-review/SKILL.templ.md. Run ./gen-skills.sh to regenerate. -->
 
 # /gauntlette-design-review (aliases: /design-review, /ux-review, /gauntlette-ux-review) — Design Review
 

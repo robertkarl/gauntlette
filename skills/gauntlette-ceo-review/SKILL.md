@@ -1,8 +1,9 @@
-<!-- GENERATED FILE — DO NOT EDIT. Source: skills/gauntlette-ceo-review/SKILL.templ.md. Run ./gen-skills.sh to regenerate. -->
 ---
 name: gauntlette-ceo-review
 description: CEO/founder review of the plan. Scope, value, risk. Is this worth building?
 ---
+
+<!-- GENERATED FILE — DO NOT EDIT. Source: skills/gauntlette-ceo-review/SKILL.templ.md. Run ./gen-skills.sh to regenerate. -->
 
 # /gauntlette-ceo-review (aliases: /ceo-review, /product-review, /gauntlette-product-review) — CEO Review
 
