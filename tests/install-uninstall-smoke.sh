@@ -53,6 +53,12 @@ assert_generated_prompts() {
     grep -Fq "/prompts:$command" "$file" || fail "missing /prompts:$command reference in $file"
   done
 
+  grep -Fq "description: 'Challenge the idea itself: scope, value, and risk.'" "$prompt_dir/gauntlette-ceo-review.md" || fail "description with colon was not YAML-quoted"
+  grep -Fq "description: 'Run the ship workflow: tests, version, changelog, merge, deploy, and push.'" "$prompt_dir/gauntlette-ship-it.md" || fail "ship-it description with colon was not YAML-quoted"
+  grep -Fq "Use the \`survey-and-plan\` skill now." "$prompt_dir/gauntlette-start.md" || fail "gauntlette-start does not route to survey-and-plan"
+  grep -Fq "Use the \`implement\` skill now." "$prompt_dir/gauntlette-implement.md" || fail "gauntlette-implement does not route to implement"
+  grep -Fq "Use the \`ship-it\` skill now." "$prompt_dir/gauntlette-ship-it.md" || fail "gauntlette-ship-it does not route to ship-it"
+
   count=$(find "$prompt_dir" -maxdepth 1 -type f -name 'gauntlette-*.md' | wc -l | tr -d ' ')
   [ "$count" = "${#COMMANDS[@]}" ] || fail "expected ${#COMMANDS[@]} prompt wrappers, found $count"
 }

@@ -28,17 +28,17 @@ SKILL_LINKS=(
 
 CODEX_PROMPT_WRAPPERS=(
   "gauntlette-help|gauntlette-help|Show preferred gauntlette commands, pipeline order, and current plan status."
-  "gauntlette-start|gauntlette-start|Create the design doc and active plan, orient on codebase, and run the planning interview."
+  "gauntlette-start|survey-and-plan|Create the design doc and active plan, orient on codebase, and run the planning interview."
   "gauntlette-ceo-review|gauntlette-ceo-review|Challenge the idea itself: scope, value, and risk."
   "gauntlette-design-review|gauntlette-design-review|Run visual design review with wireframes, state diagrams, and design ratings."
   "gauntlette-eng-review|gauntlette-eng-review|Run engineering review with architecture diagrams, failure modes, and test plan."
-  "gauntlette-fresh-eyes|gauntlette-fresh-eyes|Run an independent adversarial review from fresh context."
-  "gauntlette-cso-review|gauntlette-cso-review|Run an optional security audit for secrets, supply chain, auth, injection, infra, and privacy."
-  "gauntlette-implement|gauntlette-implement|Build the feature from the active Gauntlette plan."
-  "gauntlette-code-review|gauntlette-code-review|Run a post-implementation adversarial code review."
-  "gauntlette-quality-check|gauntlette-quality-check|Run E2E browser QA with diff-aware automation."
-  "gauntlette-human-review|gauntlette-human-review|Run the human review checklist before shipping."
-  "gauntlette-ship-it|gauntlette-ship-it|Run the ship workflow: tests, version, changelog, merge, deploy, and push."
+  "gauntlette-fresh-eyes|fresh-eyes|Run an independent adversarial review from fresh context."
+  "gauntlette-cso-review|cso-review|Run an optional security audit for secrets, supply chain, auth, injection, infra, and privacy."
+  "gauntlette-implement|implement|Build the feature from the active Gauntlette plan."
+  "gauntlette-code-review|code-review|Run a post-implementation adversarial code review."
+  "gauntlette-quality-check|quality-check|Run E2E browser QA with diff-aware automation."
+  "gauntlette-human-review|human-review|Run the human review checklist before shipping."
+  "gauntlette-ship-it|ship-it|Run the ship workflow: tests, version, changelog, merge, deploy, and push."
 )
 
 # Check source exists
@@ -96,6 +96,12 @@ link_skill() {
   echo "Linked: /$target_name"
 }
 
+yaml_quote() {
+  local value
+  value=$(printf "%s" "$1" | sed "s/'/''/g")
+  printf "'%s'" "$value"
+}
+
 write_codex_prompt_wrapper() {
   local prompt_name="$1"
   local skill_name="$2"
@@ -119,7 +125,9 @@ write_codex_prompt_wrapper() {
 
   {
     printf -- "---\n"
-    printf "description: %s\n" "$description"
+    printf "description: "
+    yaml_quote "$description"
+    printf "\n"
     printf "argument-hint: [ARGUMENTS]\n"
     printf -- "---\n\n"
     printf "<!-- %s. Do not edit directly. -->\n\n" "$GAUNTLETTE_PROMPT_MARKER"

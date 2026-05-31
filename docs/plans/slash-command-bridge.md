@@ -314,6 +314,21 @@ Deviations:
 
 - None. The implementation follows the engineering review correction: Codex is documented as `/prompts:gauntlette-*`, not bare `/gauntlette-*`.
 
+## Code Review
+
+Status: PASS after two auto-fixed issues.
+
+Findings:
+
+- IMPORTANT, FIXED: prompt wrapper descriptions were emitted as unquoted YAML scalars. Descriptions containing `: `, such as the CEO review and ship-it prompts, could make Codex frontmatter parsing fail. `install.sh` now single-quotes generated descriptions, and `tests/install-uninstall-smoke.sh` asserts colon-containing descriptions are quoted.
+- IMPORTANT, FIXED: several wrappers routed to preferred command aliases instead of the actual skill names Codex sees from `SKILL.md` frontmatter. `/prompts:gauntlette-start` now invokes `survey-and-plan`; `/prompts:gauntlette-implement`, `/prompts:gauntlette-ship-it`, and other alias-backed commands now invoke their real skill names. The smoke test asserts representative mappings.
+
+Verification after fix:
+
+- `bash -n install.sh && bash -n uninstall.sh && bash -n tests/install-uninstall-smoke.sh`
+- `bash tests/install-uninstall-smoke.sh`
+- `git diff --check`
+
 ## Priorities
 
 1. Preserve a single source of skill behavior.
@@ -330,9 +345,9 @@ Deviations:
 | Engineering Review | `/gauntlette-eng-review` | 1 | CLEAR | Corrected Codex syntax to `/prompts:gauntlette-*`, added data flow, failure matrix, and test matrix. |
 | Fresh Eyes | `/gauntlette-fresh-eyes` | 0 | - | - |
 | Implementation | `/gauntlette-implement` | 1 | DONE | Added generated Codex prompt wrappers, safe uninstall cleanup, README docs, and temp-home smoke tests. |
-| Code Review | `/gauntlette-code-review` | 0 | - | - |
+| Code Review | `/gauntlette-code-review` | 1 | PASS | Fixed unquoted YAML descriptions and alias-backed wrappers that targeted non-existent Codex skill names. |
 | QA | `/gauntlette-quality-check` | 0 | - | - |
 | Human Review | `/gauntlette-human-review` | 0 | - | - |
 | Ship It | `/gauntlette-ship-it` | 0 | - | - |
 
-**VERDICT:** IMPLEMENTING - implementation complete, ready for code review
+**VERDICT:** REVIEWING - code review passed after YAML frontmatter and skill-routing fixes
