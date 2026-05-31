@@ -329,6 +329,20 @@ Verification after fix:
 - `bash tests/install-uninstall-smoke.sh`
 - `git diff --check`
 
+## QA
+
+Status: SKIPPED (no browser surface).
+
+This feature changes local shell installers, generated Codex prompt wrappers, README text, and a shell smoke test. There is no web app, route, preview URL, browser-rendered component, or backend endpoint with a browser-dependent user flow to exercise through gstack-browse.
+
+Shell QA run instead:
+
+- `bash -n install.sh && bash -n uninstall.sh && bash -n tests/install-uninstall-smoke.sh`
+- `bash tests/install-uninstall-smoke.sh`
+- `git diff --check master...HEAD`
+
+Result: PASS. The smoke test covers clean install, reinstall, uninstall, user-owned prompt conflict safety, ownership markers, literal `$ARGUMENTS`, YAML-quoted descriptions with colons, and representative wrapper-to-skill routing.
+
 ## Priorities
 
 1. Preserve a single source of skill behavior.
@@ -346,8 +360,8 @@ Verification after fix:
 | Fresh Eyes | `/gauntlette-fresh-eyes` | 0 | - | - |
 | Implementation | `/gauntlette-implement` | 1 | DONE | Added generated Codex prompt wrappers, safe uninstall cleanup, README docs, and temp-home smoke tests. |
 | Code Review | `/gauntlette-code-review` | 1 | PASS | Fixed unquoted YAML descriptions and alias-backed wrappers that targeted non-existent Codex skill names. |
-| QA | `/gauntlette-quality-check` | 0 | - | - |
+| QA | `/gauntlette-quality-check` | 1 | SKIPPED (no browser surface) | Browser QA not applicable; installer syntax checks and install/uninstall smoke test passed. |
 | Human Review | `/gauntlette-human-review` | 0 | - | - |
 | Ship It | `/gauntlette-ship-it` | 0 | - | - |
 
-**VERDICT:** REVIEWING - code review passed after YAML frontmatter and skill-routing fixes
+**VERDICT:** REVIEWING - QA skipped for no browser surface; shell smoke checks passed
