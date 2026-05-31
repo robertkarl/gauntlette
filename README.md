@@ -19,6 +19,8 @@ There is no telemetry, no auto-update behavior, and no phone-home.
     → /gauntlette-code-review → /gauntlette-quality-check → /gauntlette-human-review → /gauntlette-ship-it
 ```
 
+Claude Code surfaces installed Gauntlette skills as `/gauntlette-*` slash commands. Codex uses Gauntlette skills plus generated custom prompt wrappers; after install and restart, invoke the preferred commands as `/prompts:gauntlette-help`, `/prompts:gauntlette-start`, and so on, or search for `gauntlette` in the slash menu.
+
 Legacy aliases still work:
 
 - `/survey-and-plan`, `/survey`, and `/help-me-plan` all map to `/gauntlette-start`
@@ -26,6 +28,8 @@ Legacy aliases still work:
 - older names like `/product-review`, `/ux-review`, and `/arch-review` still work
 - unprefixed stage names like `/quality-check` still work
 - `/gauntlette-help` shows the current stage and preferred command names
+
+Codex prompt wrappers are installed only for the preferred `/gauntlette-*` command set. Legacy aliases still install as skills, but they do not get Codex prompt wrappers in this release.
 
 ## What Changed
 
@@ -35,6 +39,7 @@ Legacy aliases still work:
 - Architecture review now emits Mermaid plus ASCII diagrams.
 - The prompts now prefer complete options over shortcuts and use a stricter AskUserQuestion format.
 - Install now targets both `~/.claude/skills/` and `~/.codex/skills/`.
+- Install now adds Codex custom prompt wrappers under `~/.codex/prompts/` so preferred Gauntlette stages are available from Codex as `/prompts:gauntlette-*`.
 - Token reporting is bundled under `gauntlette/bin/estimate-tokens.sh`, so it no longer depends on a separate Moe checkout.
 
 ## How It Works
@@ -69,7 +74,15 @@ cd gauntlette
 - `~/.claude/skills/`
 - `~/.codex/skills/`
 
+It also writes generated Codex custom prompt wrappers into:
+
+- `${CODEX_HOME:-~/.codex}/prompts/`
+
+Codex custom prompts are a compatibility layer for command discovery. The Gauntlette skills remain the source of truth. Restart Codex or open a new Codex chat after install so the slash menu reloads the prompt wrappers.
+
 Conflicts with existing installs are skipped, not overwritten.
+
+Prompt wrappers are overwritten only when they contain Gauntlette's generated-file marker. User-owned files with the same names are skipped. `uninstall.sh` uses the same marker to remove only Gauntlette-owned prompt wrappers.
 
 The shared `gauntlette/` root symlink also carries helper tools like `gauntlette/bin/estimate-tokens.sh`, so install and uninstall pick them up automatically.
 
